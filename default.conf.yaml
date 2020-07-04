@@ -1,0 +1,22 @@
+- defaults:
+    link:
+      relink: true
+      create: true
+
+- clean: ['~', '~/.config']
+
+- link:
+    ~/.tmux.conf:
+    ~/.config/base16-shell:
+    ~/.config/nvim:
+    ~/.gitconfig:
+    ~/.zprezto: prezto
+    ~/.zshrc: 
+    ~/.zshenv: prezto/runcoms/zshenv
+    ~/.zlogin: prezto/runcoms/zlogin
+    ~/.zlogout: prezto/runcoms/zlogout
+    ~/.zpreztorc: 
+    ~/.zprofile: prezto/runcoms/zprofile
+
+- shell:
+    - [git submodule update --init --recursive, Installing submodules]

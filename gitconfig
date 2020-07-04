@@ -1,0 +1,6 @@
+[core]
+	autocrlf = input
+	editor = vim
+[user]
+	name = aaronblair
+	email = aaronblair@gmail.com

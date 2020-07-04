@@ -1,0 +1,8 @@
+- shell:
+    - apt install python3-apt
+
+- apt:
+    - neovim
+    - zsh
+    - git
+    - fzf

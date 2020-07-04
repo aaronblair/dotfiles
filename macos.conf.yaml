@@ -1,0 +1,13 @@
+- defaults:
+    link:
+        relink: true
+        create: true
+
+- link:
+    ~/.tmux_macos.conf:
+    ~/.config/alacritty:
+    ~/.config/karabiner:
+    ~/.fdignore: fdignore_macos
+
+- brewfile:
+    file: Brewfile

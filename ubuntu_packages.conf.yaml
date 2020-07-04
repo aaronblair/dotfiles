@@ -6,3 +6,5 @@
     - zsh
     - git
     - fzf
+    - curl
+    - htop

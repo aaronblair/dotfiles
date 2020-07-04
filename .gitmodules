@@ -5,9 +5,6 @@
 [submodule "base16"]
 	path = base16
 	url = https://github.com/chriskempson/base16.git
-[submodule "zprezto"]
-	path = prezto
-	url = https://github.com/sorin-ionescu/prezto.git
 [submodule "dotbot-apt"]
 	path = dotbot-apt
 	url = https://github.com/bryant1410/dotbot-apt

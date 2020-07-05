@@ -20,11 +20,11 @@ git submodule update --init --recursive "${DOTBOT_DIR}"
 OS=`uname`
 case $OS in 
     'Darwin')
-        "${BASEDIR}/${DOTBOT_DIR}/${DOTBOT_BIN}" -d "${BASEDIR}" -c "${CONFIG_MACOS}" "${@}"
+        "${BASEDIR}/${DOTBOT_DIR}/${DOTBOT_BIN}" -d "${BASEDIR}" --plugin-dir dotbot-brewfile -c "${CONFIG_MACOS}" "${@}"
 	;;
     'Linux')
 	if [ $UID != 0 ] && [ -n "$(lsb_release -d | awk -F"\t" '{print $2}' | grep Ubuntu)" ]; then
-    	    sudo "${BASEDIR}/${DOTBOT_DIR}/${DOTBOT_BIN}" -d "${BASEDIR}" -c "${CONFIG_UBUNTU}" "${@}"
+    	    sudo "${BASEDIR}/${DOTBOT_DIR}/${DOTBOT_BIN}" -d "${BASEDIR}" --plugin-dir dotbot-apt -c "${CONFIG_UBUNTU}" "${@}"
 	else
 	    echo "Script only supports Ubuntu presently... you better fix that..."
 	    exit $?

@@ -2,16 +2,39 @@
 
 set -e
 
-DEFAULT_CONFIG_PREFIX="default"
-CONFIG_SUFFIX=".conf.yaml"
+CONFIG="base.conf.yaml"
+CONFIG_MACOS="macos.conf.yaml"
+CONFIG_UBUNTU="ubuntu_packages.conf.yaml"
 DOTBOT_DIR="dotbot"
 
 DOTBOT_BIN="bin/dotbot"
 BASEDIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 cd "${BASEDIR}"
+git -C "${DOTBOT_DIR}" submodule sync --quiet --recursive
 git submodule update --init --recursive "${DOTBOT_DIR}"
 
-for conf in ${DEFAULT_CONFIG_PREFIX} ${@}; do
-    "${BASEDIR}/${DOTBOT_DIR}/${DOTBOT_BIN}" -d "${BASEDIR}" --plugin-dir dotbot-brewfile --plugin-dir dotbot-apt -c "${conf}${CONFIG_SUFFIX}"
-done
+# Install base config
+"${BASEDIR}/${DOTBOT_DIR}/${DOTBOT_BIN}" -d "${BASEDIR}" -c "${CONFIG}" "${@}"
+
+OS=`uname`
+case $OS in 
+    'Darwin')
+        "${BASEDIR}/${DOTBOT_DIR}/${DOTBOT_BIN}" -d "${BASEDIR}" -c "${CONFIG_MACOS}" "${@}"
+	;;
+    'Linux')
+	if [ $UID != 0 ] && [ -n "$(uname -a | grep Ubuntu)" ]; then
+    	    sudo "${BASEDIR}/${DOTBOT_DIR}/${DOTBOT_BIN}" -d "${BASEDIR}" -c "${CONFIG_UBUNTU}" "${@}"
+	else
+	    echo "Script only supports Ubuntu presently... you better fix that..."
+	    exit $?
+	fi
+	;;
+    *)
+	echo "Unknown OS: $OS, not doing anything"
+        ;;
+esac
+
+echo "Install Vim-Plug"
+sh -c 'curl -fLo "${XDG_DATA_HOME:-$HOME/.local/share}"/nvim/site/autoload/plug.vim --create-dirs \
+       https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim'

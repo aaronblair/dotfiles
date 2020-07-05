@@ -23,7 +23,7 @@ case $OS in
         "${BASEDIR}/${DOTBOT_DIR}/${DOTBOT_BIN}" -d "${BASEDIR}" -c "${CONFIG_MACOS}" "${@}"
 	;;
     'Linux')
-	if [ $UID != 0 ] && [ -n "$(uname -a | grep Ubuntu)" ]; then
+	if [ $UID != 0 ] && [ -n "$(lsb_release -d | awk -F"\t" '{print $2}' | grep Ubuntu)" ]; then
     	    sudo "${BASEDIR}/${DOTBOT_DIR}/${DOTBOT_BIN}" -d "${BASEDIR}" -c "${CONFIG_UBUNTU}" "${@}"
 	else
 	    echo "Script only supports Ubuntu presently... you better fix that..."

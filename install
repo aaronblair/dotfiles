@@ -36,3 +36,6 @@ esac
 
 # Install base config - this goes at end because it changes shell and vimplug depends on curl
 "${BASEDIR}/${DOTBOT_DIR}/${DOTBOT_BIN}" -d "${BASEDIR}" -c "${CONFIG}" "${@}"
+
+echo "Making zsh the default shell"
+chsh -s $(which zsh)

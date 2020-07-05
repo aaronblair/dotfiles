@@ -19,4 +19,8 @@
     ~/.zprofile: prezto/runcoms/zprofile
 
 - shell:
-    - [git submodule update --init --recursive, Installing submodules]
+    - [sh -c 'curl -fLo "${XDG_DATA_HOME:-$HOME/.local/share}"/nvim/site/autoload/plug.vim --create-dirs \
+       https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim', Installing Vim-Plug]
+    - [git submodule sync --recursive, Sync Modules]
+    - [git submodule update --init --recursive, Updating submodules]
+    - [chsh -s $(which zsh), Making zsh the default shell]

@@ -166,7 +166,7 @@ font:
   use_thin_strokes: true
 
 # If `true`, bold text is drawn using the bright color variants.
-draw_bold_text_with_bright_colors: false
+#draw_bold_text_with_bright_colors: false
 
 # Colors (Tomorrow Night Bright)
 colors:
@@ -229,37 +229,46 @@ colors:
   #  magenta: '#b77ee0'
   #  cyan:    '#54ced6'
   #  white:   '#ffffff'
-
+  
+  # Default colors
   primary:
-    background: "0x2d2d2d"
-    foreground: "0xd3d0c8"
+    background: '0x2d2d2d'
+    foreground: '0xcccccc'
 
   # Colors the cursor will use if `custom_cursor_colors` is true
   cursor:
-    text: "0x2d2d2d"
-    cursor: "0xd3d0c8"
+    text: '0x2d2d2d'
+    cursor: '0xcccccc'
 
   # Normal colors
   normal:
-    black: "0x2d2d2d"
-    red: "0xf2777a"
-    green: "0x99cc99"
-    yellow: "0xffcc66"
-    blue: "0x6699cc"
-    magenta: "0xcc99cc"
-    cyan: "0x66cccc"
-    white: "0xd3d0c8"
+    black:   '0x2d2d2d'
+    red:     '0xf2777a'
+    green:   '0x99cc99'
+    yellow:  '0xffcc66'
+    blue:    '0x6699cc'
+    magenta: '0xcc99cc'
+    cyan:    '0x66cccc'
+    white:   '0xcccccc'
 
   # Bright colors
   bright:
-    black: "0x747369"
-    red: "0xf99157"
-    green: "0x393939"
-    yellow: "0x515151"
-    blue: "0xa09f93"
-    magenta: "0xe8e6df"
-    cyan: "0xd27b53"
-    white: "0xf2f0ec"
+    black:   '0x999999'
+    red:     '0xf2777a'
+    green:   '0x99cc99'
+    yellow:  '0xffcc66'
+    blue:    '0x6699cc'
+    magenta: '0xcc99cc'
+    cyan:    '0x66cccc'
+    white:   '0xffffff'
+
+  indexed_colors:
+    - { index: 16, color: '0xf99157' }
+    - { index: 17, color: '0xa3685a' }
+    - { index: 18, color: '0x393939' }
+    - { index: 19, color: '0x515151' }
+    - { index: 20, color: '0xb4b7b4' }
+    - { index: 21, color: '0xe0e0e0' }
 
   # Dim colors
   #

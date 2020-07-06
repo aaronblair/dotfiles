@@ -11,3 +11,6 @@
 
 - brewfile:
     file: Brewfile
+
+- shell:
+    - [cd fonts && ./install.sh, Installing Powerline Fonts]

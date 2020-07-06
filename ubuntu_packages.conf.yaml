@@ -9,3 +9,4 @@
     - curl
     - htop
     - language-pack-en
+    - tmux

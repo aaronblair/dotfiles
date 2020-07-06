@@ -14,3 +14,4 @@
 
 - shell:
     - [cd fonts && ./install.sh, Installing Powerline Fonts]
+    - [./macos_settings.sh, Setting OS settings]

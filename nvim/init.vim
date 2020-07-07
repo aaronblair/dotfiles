@@ -2,7 +2,6 @@
 call plug#begin()
 Plug 'tpope/vim-sensible'
 Plug 'chriskempson/base16-vim'
-Plug 'terryma/vim-multiple-cursors'
 call plug#end()
 
 set background=dark

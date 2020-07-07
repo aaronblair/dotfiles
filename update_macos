@@ -9,6 +9,9 @@ brew outdated && brew upgrade
 echo "Upgrading Brew Casks"
 Brew cask outdated && brew cask upgrade
 
+echo "Updating VIM Plugins"
+nvim +PlugUpgrade +PlugUpdate +qall > /dev/null
+
 echo "Upgrading dotfile submodules"
 git submodule update --recursive --remote
 echo "You should consider commiting the .dotfiles repo if there were upstream changes"

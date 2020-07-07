@@ -19,5 +19,10 @@ tags
 # Persistent undo
 [._]*.un~
 
+
 # Brew lock file
 Brewfile.lock.json
+
+
+# Ignore nvim plugin directory - it auto regens
+nvim/plugged

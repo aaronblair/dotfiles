@@ -3,6 +3,10 @@
         relink: true
         create: true
 
+- shell
+    - [git submodule sync --recursive, Sync Modules]
+    - [git submodule update --init --recursive, Updating submodules]
+
 - link:
     ~/.tmux_macos.conf:
     ~/.config/alacritty:

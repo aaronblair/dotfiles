@@ -1,5 +1,7 @@
 - shell:
-    - apt install python3-apt
+    - [git submodule sync --recursive, Sync Modules]
+    - [git submodule update --init --recursive, Updating submodules]
+    - apt install python3-apt -y
 
 - apt:
     - neovim

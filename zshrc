@@ -5,6 +5,8 @@
 #   Sorin Ionescu <sorin.ionescu@gmail.com>
 #
 
+setopt HIST_IGNORE_SPACE
+
 export EDITOR="/usr/local/bin/nvim"
 
 # Source Prezto.

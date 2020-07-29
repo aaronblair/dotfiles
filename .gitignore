@@ -26,3 +26,7 @@ Brewfile.lock.json
 
 # Ignore nvim plugin directory - it auto regens
 nvim/plugged
+
+# Ignore karabiner backups
+karabiner/automatic_backups
+

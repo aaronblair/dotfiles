@@ -7,7 +7,7 @@ echo "Upgrading Brew"
 brew outdated && brew upgrade
 
 echo "Upgrading Brew Casks"
-Brew cask outdated && brew cask upgrade
+brew outdated --cask && brew upgrade --cask
 
 echo "Updating VIM Plugins"
 nvim +PlugUpgrade +PlugUpdate +qall > /dev/null

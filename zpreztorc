@@ -35,7 +35,7 @@ zstyle ':prezto:load' pmodule \
   'editor' \
   'history' \
   'directory' \
-  'spectrum' \
+  'gnu-utility' \
   'utility' \
   'completion' \
   'history-substring-search' \
@@ -76,6 +76,8 @@ zstyle ':prezto:module:editor' dot-expansion 'yes'
 # Git
 #
 
+zstyle ':prezto:module:git:alias' skip 'yes'
+
 # Ignore submodules when they are 'dirty', 'untracked', 'all', or 'none'.
 zstyle ':prezto:module:git:status:ignore' submodules 'all'
 
@@ -84,7 +86,7 @@ zstyle ':prezto:module:git:status:ignore' submodules 'all'
 #
 
 # Set the command prefix on non-GNU systems.
-# zstyle ':prezto:module:gnu-utility' prefix 'g'
+zstyle ':prezto:module:gnu-utility' prefix 'g'
 
 #
 # History Substring Search
@@ -210,7 +212,7 @@ zstyle ':prezto:module:terminal' auto-title 'yes'
 #
 
 # Auto start a session when Zsh is launched in a local terminal.
-zstyle ':prezto:module:tmux:auto-start' local 'yes'
+# zstyle ':prezto:module:tmux:auto-start' local 'yes'
 
 # Auto start a session when Zsh is launched in a SSH connection.
 zstyle ':prezto:module:tmux:auto-start' remote 'yes'

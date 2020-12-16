@@ -4,6 +4,7 @@ tap "homebrew/core"
 brew "awscli"
 brew "node"
 brew "bitwarden-cli"
+brew "coreutils"
 brew "curl"
 brew "dos2unix"
 brew "fd"
@@ -39,7 +40,6 @@ cask "spectacle"
 cask "viscosity"
 cask "karabiner-elements"
 cask "scroll-reverser"
-cask "artpip"
 cask "alfred"
 cask "little-snitch"
 cask "duet"
@@ -59,3 +59,4 @@ mas "Pixelmator Pro", id: 1289583905
 mas "The Unarchiver", id: 425424353
 mas "Todoist", id: 585829637
 mas "WireGuard", id: 1451685025
+mas "Unsplash Wallpapers", id: 1284863847

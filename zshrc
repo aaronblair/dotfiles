@@ -45,7 +45,3 @@ BASE16_SHELL="$HOME/.config/base16-shell/"
 [ -n "$PS1" ] && \
     [ -s "$BASE16_SHELL/profile_helper.sh" ] && \
         eval "$("$BASE16_SHELL/profile_helper.sh")"
-
-
-# Created by `userpath` on 2020-06-15 20:22:42
-export PATH="$PATH:/Users/aaron/.local/bin"

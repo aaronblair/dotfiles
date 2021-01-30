@@ -31,13 +31,8 @@ set clipboard=unnamedplus,unnamed
 " Enable mouse support
 set mouse=a
 
-" Configure auto line numbers
-:set number relativenumber
-:augroup numbertoggle
-:  autocmd!
-:  autocmd BufEnter,FocusGained,InsertLeave * set relativenumber
-:  autocmd BufLeave,FocusLost,InsertEnter   * set norelativenumber
-:augroup END
+" Configure line numbers
+:set number norelativenumber
 
 " FZF Shortcuts
 nnoremap <C-p> :FZF<CR>

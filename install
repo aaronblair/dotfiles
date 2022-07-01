@@ -38,4 +38,5 @@ esac
 "${BASEDIR}/${DOTBOT_DIR}/${DOTBOT_BIN}" -d "${BASEDIR}" -c "${CONFIG}" "${@}"
 
 echo "Making zsh the default shell"
+sudo echo "$(which zsh)" >> /etc/shells
 chsh -s $(which zsh)

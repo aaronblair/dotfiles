@@ -3,7 +3,7 @@
         relink: true
         create: true
 
-- shell
+- shell:
     - [git submodule sync --recursive, Sync Modules]
     - [git submodule update --init --recursive, Updating submodules]
 
@@ -15,6 +15,9 @@
 
 - brewfile:
     file: Brewfile
+    include: ['tap', 'brew', 'cask', 'mas']
+    stdout: true
+    stderr: true
 
 - shell:
     - [cd fonts && ./install.sh, Installing Powerline Fonts]

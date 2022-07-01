@@ -63,6 +63,10 @@ sudo defaults write /Library/Preferences/com.apple.loginwindow AdminHostInfo Hos
 # (e.g. enable Tab in modal dialogs)
 defaults write NSGlobalDomain AppleKeyboardUIMode -int 3
 
+# Speed up key repeat rate
+defaults write -g KeyRepeat 2
+defaults write -g InitialKeyRepeat -int 18
+
 ###############################################################################
 # Finder                                                                      #
 ###############################################################################

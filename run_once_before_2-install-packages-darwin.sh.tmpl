@@ -1,0 +1,66 @@
+{{- if eq .chezmoi.os "darwin" -}}
+#!/bin/bash
+
+brew analytics off
+
+brew bundle --no-lock --file=/dev/stdin <<EOF
+tap "homebrew/bundle"
+tap "homebrew/cask"
+tap "homebrew/command-not-found"
+tap "homebrew/core"
+tap "tavianator/tap/bfs"
+brew "awscli"
+brew "chezmoi"
+brew "coreutils"
+brew "curl"
+brew "dos2unix"
+brew "fd"
+brew "fzf"
+brew "git"
+brew "go"
+brew "htop"
+brew "mas"
+brew "ncdu"
+brew "neovim"
+brew "node"
+brew "pyenv-virtualenv"
+brew "pyenv-virtualenvwrapper"
+brew "pyenv"
+brew "python"
+brew "rar"
+brew "scrcpy"
+brew "speedtest-cli"
+brew "ssh-copy-id", link: true
+brew "thefuck"
+brew "tldr"
+brew "tmux"
+brew "tree"
+brew "wget"
+brew "yt-dlp"
+brew "zsh"
+cask "alacritty"
+cask "alfred"
+cask "beersmith"
+cask "bettertouchtool"
+cask "google-chrome"
+cask "little-snitch"
+cask "macfuse"
+cask "monodraw"
+cask "notion"
+cask "parallels"
+cask "signal"
+cask "syncthing"
+cask "transmission-remote-gui"
+cask "veracrypt"
+cask "visual-studio-code"
+cask "vlc"
+mas "Amphetamine", id: 937984704
+mas "Bitwarden", id:1352778147
+mas "Brother iPrint&Scan", id: 1193539993
+mas "Pixelmator Pro", id: 1289583905
+mas "The Unarchiver", id: 425424353
+mas "Todoist", id: 585829637
+mas "Unsplash Wallpapers", id: 1284863847
+mas "WireGuard", id: 1451685025
+EOF
+{{ end -}}

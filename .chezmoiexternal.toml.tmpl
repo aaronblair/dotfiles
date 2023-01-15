@@ -1,0 +1,22 @@
+{{- if eq .chezmoi.os "darwin" -}}
+["Library/Fonts/MesloLGS NF Regular.ttf"]
+    type = "file"
+    url = "https://github.com/romkatv/powerlevel10k-media/raw/master/MesloLGS%20NF%20Regular.ttf"
+    refreshPeriod = "672h"
+["Library/Fonts/MesloLGS NF Bold.ttf"]
+    type = "file"
+    url = "https://github.com/romkatv/powerlevel10k-media/raw/master/MesloLGS%20NF%20Bold.ttf"
+    refreshPeriod = "672h"
+["Library/Fonts/MesloLGS NF Italic.ttf"]
+    type = "file"
+    url = "https://github.com/romkatv/powerlevel10k-media/raw/master/MesloLGS%20NF%20Italic.ttf"
+    refreshPeriod = "672h"
+["Library/Fonts/MesloLGS NF Bold Italic.ttf"]
+    type = "file"
+    url = "https://github.com/romkatv/powerlevel10k-media/raw/master/MesloLGS%20NF%20Bold%20Italic.ttf"
+    refreshPeriod = "672h"
+{{ end -}}
+
+[".config/nvim"]
+    type = "git-repo"
+    url = "https://github.com/AstroNvim/AstroNvim"

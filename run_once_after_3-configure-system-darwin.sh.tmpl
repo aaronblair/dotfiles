@@ -243,9 +243,6 @@ sudo defaults write /Library/Preferences/SystemConfiguration/com.apple.captive.c
 # Opt-out from Siri data collection
 defaults write com.apple.assistant.support 'Siri Data Sharing Opt-In Status' -int 2
 
-# Disable remote login (incoming SSH and SFTP connections)
-echo 'yes' | sudo systemsetup -setremotelogin off
-
 # Disable insecure TFTP service
 sudo launchctl disable 'system/com.apple.tftpd'
 
@@ -267,7 +264,6 @@ sudo defaults write /Library/Preferences/com.apple.alf globalstate -bool true
 defaults write com.apple.security.firewall EnableFirewall -bool true
 
 # Turn on firewall logging
-/usr/libexec/ApplicationFirewall/socketfilterfw --setloggingmode on
 sudo defaults write /Library/Preferences/com.apple.alf loggingenabled -bool true
 
 # Turn on stealth mode
@@ -346,12 +342,10 @@ for app in "Activity Monitor" \
 	"cfprefsd" \
 	"Dock" \
 	"Finder" \
-	"Google Chrome Canary" \
 	"Google Chrome" \
 	"Photos" \
 	"Safari" \
-	"SystemUIServer" \
-	"Terminal"; do
+	"SystemUIServer"; do
 	killall "${app}" &> /dev/null
 done
 echo "Done. Note that some of these changes require a logout/restart to take effect."

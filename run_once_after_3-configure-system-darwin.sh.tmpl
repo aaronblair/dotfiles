@@ -61,6 +61,9 @@ sudo defaults write /Library/Preferences/com.apple.loginwindow AdminHostInfo Hos
 # (e.g. enable Tab in modal dialogs)
 defaults write NSGlobalDomain AppleKeyboardUIMode -int 3
 
+# Disable keyboard press and hold - this stops the key repeat from working
+defaults write -g ApplePressAndHoldEnabled -bool false
+
 # Speed up key repeat rate
 defaults write -g KeyRepeat 2
 defaults write -g InitialKeyRepeat -int 18
@@ -134,7 +137,7 @@ defaults write com.apple.finder FXInfoPanesExpanded -dict \
 # Dock, Dashboard, and hot corners                                            #
 ###############################################################################
 
-# Set the icon size of Dock items to 36 pixels
+# Set the icon size of Dock items to 50 pixels
 defaults write com.apple.dock tilesize -int 50
 
 # Automatically hide and show the Dock
@@ -173,9 +176,6 @@ defaults write com.apple.terminal StringEncodings -array 4
 
 # Prevent Time Machine from prompting to use new hard drives as backup volume
 defaults write com.apple.TimeMachine DoNotOfferNewDisksForBackup -bool true
-
-# Disable local Time Machine backups
-hash tmutil &> /dev/null && sudo tmutil disablelocal
 
 ###############################################################################
 # Activity Monitor                                                            #
@@ -231,7 +231,6 @@ defaults -currentHost write com.apple.ImageCapture disableHotPlug -bool true
 
 # Expand the print dialog by default
 defaults write com.google.Chrome PMPrintingExpandedStateForPrint2 -bool true
-defaults write com.google.Chrome.canary PMPrintingExpandedStateForPrint2 -bool true
 
 ###############################################################################
 # Security / Privacy - https://privacy.sexy - 0.11.4
@@ -277,14 +276,6 @@ cupsctl --no-remote-any
 # Deactivate the Remote Management Service
 sudo /System/Library/CoreServices/RemoteManagement/ARDAgent.app/Contents/Resources/kickstart -deactivate -stop
 
-# Remove Apple Remote Desktop Settings
-sudo rm -rf /var/db/RemoteManagement
-sudo defaults delete /Library/Preferences/com.apple.RemoteDesktop.plist
-defaults delete ~/Library/Preferences/com.apple.RemoteDesktop.plist
-sudo rm -r /Library/Application\ Support/Apple/Remote\ Desktop/ 
-rm -r ~/Library/Application\ Support/Remote\ Desktop/
-rm -r ~/Library/Containers/com.apple.RemoteDesktop
-
 # Disable "Ask Siri"
 defaults write com.apple.assistant.support 'Assistant Enabled' -bool false
 
@@ -311,10 +302,6 @@ defaults write com.apple.systemuiserver 'NSStatusItem Visible Siri' 0
 # Hide Siri from status menu
 defaults write com.apple.Siri 'StatusMenuVisible' -bool false
 defaults write com.apple.Siri 'UserHasDeclinedEnable' -bool true
-
-
-# Disable Remote Apple Events
-sudo systemsetup -setremoteappleevents off
 
 # Do not show recent items on dock
 defaults write com.apple.dock show-recents -bool false
@@ -345,7 +332,7 @@ for app in "Activity Monitor" \
 	"Google Chrome" \
 	"Photos" \
 	"Safari" \
-	"SystemUIServer"; do
+	"SystemUIServer"; do 
 	killall "${app}" &> /dev/null
 done
 echo "Done. Note that some of these changes require a logout/restart to take effect."

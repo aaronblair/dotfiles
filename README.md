@@ -15,9 +15,10 @@
 2. Grant access to terminal to edit applications
 
     System Settings -> Privacy & Security -> Full Disk Access
-      Add terminal
+    |  Add terminal
+    
     System Settings -> Privacy & Security -> App Management
-      Add Terminal
+    |  Add Terminal
 
 3. Install command line tools
 

@@ -59,8 +59,6 @@
    chsh -s /opt/homebrew/bin/zsh
    ```
 
-   - Initialize VIM
-
    - Grant full disk access to apps that need it
      - Alfred
      - Alacritty
@@ -69,6 +67,7 @@
 
    - Login to key apps
 
+   - Disable useless shortcuts in Keyboard settings
 
 
 

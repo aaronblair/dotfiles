@@ -12,17 +12,20 @@
    sudo shutdown -r now
    ```
 
-2. grant access to terminal to edit applications
+2. Grant access to terminal to edit applications
 
+    System Settings -> Privacy & Security -> Full Disk Access
+      Add terminal
+    System Settings -> Privacy & Security -> App Management
+      Add Terminal
 
-
-2. Install command line tools
+3. Install command line tools
 
    ```sh
    xcode-select --install
    ```
 
-2. Install Homebrew & Chezmoi
+4. Install Homebrew & Chezmoi
 
    ```sh
    # Install Homebrew
@@ -38,7 +41,7 @@
    chezmoi init aaronblair --apply
    ```
 
-3. Manual tasks
+5. Manual tasks
 
    - Turn on Filevault
    ```

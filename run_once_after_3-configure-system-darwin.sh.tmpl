@@ -137,6 +137,15 @@ defaults write com.apple.finder FXInfoPanesExpanded -dict \
 	OpenWith -bool true \
 	Privileges -bool true
 
+# Start new window in home directory (not recents)
+defaults write com.apple.finder NewWindowTarget PfHm
+
+# Default path is home directory - hard coding username - todo
+defaults write com.apple.finder NewWindowTargetPath "file:///Users/aaron/"
+
+# Don't show recent tags
+defaults write com.apple.finder ShowRecentTags 0
+
 ###############################################################################
 # Dock, Dashboard, and hot corners                                            #
 ###############################################################################

@@ -6,3 +6,9 @@ Host *
   ControlMaster auto
   ControlPersist 72000
   ControlPath ~/.ssh/s/%C
+
+Host switchy*
+  User root
+	KexAlgorithms=+diffie-hellman-group14-sha1
+  HostKeyAlgorithms=+ssh-rsa
+  PreferredAuthentications keyboard-interactive,password

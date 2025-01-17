@@ -50,15 +50,6 @@
    sudo fdesetup enable
    ```
 
-   - Change shell to brew zsh (vs builtin MacOS Zsh):
-   ```
-   # Add shell /etc/shells (arm64)
-   sudo echo '/opt/homebrew/bin/zsh' > /etc/shells
-
-   # Change shell
-   chsh -s /opt/homebrew/bin/zsh
-   ```
-
    - Grant full disk access to apps that need it
      - Alfred
      - Alacritty

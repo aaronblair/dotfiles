@@ -76,9 +76,6 @@ defaults write -g com.apple.keyboard.fnState 1
 # Finder                                                                      #
 ###############################################################################
 
-# Finder: allow quitting via ⌘ + Q; doing so will also hide desktop icons
-defaults write com.apple.finder QuitMenuItem -bool true
-
 # Finder: disable window animations and Get Info animations
 defaults write com.apple.finder DisableAllAnimations -bool true
 
@@ -145,6 +142,9 @@ defaults write com.apple.finder NewWindowTargetPath "file:///Users/aaron/"
 
 # Don't show recent tags
 defaults write com.apple.finder ShowRecentTags 0
+
+# Remove trash items after 30 days automatically
+defaults write com.apple.finder FXRemoveOldTrashItems -int 1
 
 ###############################################################################
 # Dock, Dashboard, and hot corners                                            #

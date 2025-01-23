@@ -1,0 +1,5 @@
+(
+	command_fg: Some("#CDD6F4"),
+	selection_bg: Some("#585B70"),
+	cmdbar_bg: Some("#1E1E2E"),
+)

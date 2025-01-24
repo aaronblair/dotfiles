@@ -22,6 +22,11 @@ zmodule utility
 # Enable 'z' / zoxide in zsh
 zmodule kiesman99/zim-zoxide
 
+# Enable eza
+# This module must be sourced after the utility module, so this 
+# module can override the aliases set by that one.
+zmodule exa
+
 zmodule fzf
 
 #

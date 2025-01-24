@@ -23,7 +23,9 @@ if type nvim > /dev/null 2>&1; then
   alias vi='nvim'
 fi
 
-alias ls='eza --group-directories-first --icons'
+if type nvim > /dev/null 2>&1; then
+  alias ls='eza --group-directories-first --icons'
+fi
 
 # -----------------
 # Zsh configuration

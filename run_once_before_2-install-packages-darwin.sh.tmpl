@@ -3,7 +3,7 @@
 
 brew analytics off
 
-brew bundle --no-lock --file=/dev/stdin <<EOF
+brew bundle --file=/dev/stdin <<EOF
 brew "ast-grep" # Used by vim
 brew "bfs" # Used by fzf & zsh
 brew "chezmoi"
@@ -13,6 +13,7 @@ brew "dos2unix"
 brew "eza"
 brew "fd" # Used by vim
 brew "fzf"
+brew "gh"
 brew "git"
 brew "gitui"
 brew "go"
@@ -22,7 +23,7 @@ brew "mas"
 brew "ncdu"
 brew "neovim"
 brew "ocrmypdf"
-brew "rg" # Used by vim
+brew "ripgrep"
 brew "scrcpy"
 brew "ssh-copy-id", link: true
 brew "tmux"
@@ -30,6 +31,7 @@ brew "tree"
 brew "uv"
 brew "wget"
 brew "yt-dlp"
+brew "zoxide"
 cask "alfred"
 cask "balenaetcher"
 cask "battery"
@@ -39,12 +41,14 @@ cask "brave-browser"
 cask "monodraw"
 cask "mos"
 cask "notion"
+cask "obsidian"
 cask "parallels"
 cask "signal"
-cask "syncthing"
+cask "syncthing-app"
 cask "transmission-remote-gui"
 cask "visual-studio-code"
 cask "vlc"
+cask "wezterm"
 cask "whatsapp"
 mas "Amphetamine", id: 937984704
 mas "Bitwarden", id: 1352778147
@@ -54,15 +58,8 @@ mas "The Unarchiver", id: 425424353
 mas "Todoist", id: 585829637
 mas "Unsplash Wallpapers", id: 1284863847
 mas "WireGuard", id: 1451685025
-vscode "ms-azuretools.vscode-docker"
-vscode "ms-python.debugpy"
-vscode "ms-python.python"
-vscode "ms-python.vscode-pylance"
-vscode "ms-vscode-remote.remote-containers"
+vscode "kilocode.kilo-code"
 vscode "ms-vscode.cpptools"
-vscode "ms-vscode.hexeditor"
 vscode "platformio.platformio-ide"
-vscode "saoudrizwan.claude-dev"
 EOF
 {{ end -}}
-

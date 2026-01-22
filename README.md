@@ -5,9 +5,9 @@
 1. Set hostname
 
    ```
-   sudo scutil --set HostName
-   sudo scutil --set LocalHostName
-   sudo scutil --set ComputerName
+   sudo scutil --set HostName <hostname>
+   sudo scutil --set LocalHostName <hostname>
+   sudo scutil --set ComputerName <hostname>
    dscacheutil -flushcache
    sudo shutdown -r now
    ```
@@ -42,23 +42,49 @@
    chezmoi init aaronblair --apply
    ```
 
-5. Manual tasks
+5. SSH Key Setup
 
-   - Turn on Filevault
+   Either generate a new key or restore from secure backup:
+   ```sh
+   # Generate new key
+   ssh-keygen -t ed25519 -C "your_email@example.com"
+
+   # Start ssh-agent and add key
+   eval "$(ssh-agent -s)"
+   ssh-add ~/.ssh/id_ed25519
+
+   # Copy public key to clipboard
+   pbcopy < ~/.ssh/id_ed25519.pub
    ```
-   # Enables filevault - be sure to backup recovery key
+
+   Add key to GitHub: https://github.com/settings/keys
+
+6. Authenticate GitHub CLI
+
+   ```sh
+   gh auth login
+   ```
+
+7. Manual tasks
+
+   - Turn on FileVault
+   ```sh
+   # Enables FileVault - be sure to backup recovery key
    sudo fdesetup enable
    ```
 
    - Grant full disk access to apps that need it
      - Alfred
-     - Alacritty
+     - WezTerm
 
-   - Copy SSH key to servers (incl github)
-
-   - Login to key apps
+   - Sign into apps
+     - Bitwarden
+     - Google Drive
+     - Notion
+     - Obsidian
+     - Brave Browser (sync)
+     - VSCode (Settings Sync)
 
    - Disable useless shortcuts in Keyboard settings
 
-
-
+   - (If doing mobile dev) Install Android Studio SDK

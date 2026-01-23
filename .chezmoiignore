@@ -10,7 +10,7 @@ Library/
 run_once_*darwin*
 {{- end }}
 
-{{- if not (env "DISPLAY") }}
-# GUI apps not needed in headless environments
+{{- if or (not (env "DISPLAY")) (stat "/.dockerenv") (env "CONTAINER") }}
+# GUI apps not needed in headless/container environments
 dot_wezterm.lua
 {{- end }}

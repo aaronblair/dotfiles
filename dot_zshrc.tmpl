@@ -28,6 +28,10 @@ if type eza > /dev/null 2>&1; then
   alias ls='eza --group-directories-first --icons'
 fi
 
+# Claude Code
+export PATH="$HOME/.local/bin:$PATH"
+
+{{- if eq .chezmoi.os "darwin" }}
 # NVM setup (sourced after zim init to avoid compinit conflict)
 export NVM_DIR="{{ .chezmoi.homeDir }}/.nvm"
 
@@ -40,12 +44,10 @@ export PATH=$PATH:$ANDROID_HOME/platform-tools
 # Antigravity
 export PATH="{{ .chezmoi.homeDir }}/.antigravity/antigravity/bin:$PATH"
 
-# Claude Code
-export PATH="$HOME/.local/bin:$PATH"
-
-# Bun (sourced after zim init to avoid compinit conflict)
+# Bun
 export BUN_INSTALL="{{ .chezmoi.homeDir }}/.bun"
 export PATH="$BUN_INSTALL/bin:$PATH"
+{{- end }}
 
 
 # -----------------
@@ -188,7 +190,8 @@ unset key
 # ------------------------------
 # These must be sourced AFTER zim init to avoid compinit conflicts
 
-# NVM
+{{- if eq .chezmoi.os "darwin" }}
+# NVM (Homebrew)
 [ -s "/opt/homebrew/opt/nvm/nvm.sh" ] && \. "/opt/homebrew/opt/nvm/nvm.sh"
 
 # Bun completions
@@ -197,3 +200,4 @@ unset key
 # VSCode shell integration (must be after zim init)
 # https://github.com/saoudrizwan/shell-integration-problems
 [[ "$TERM_PROGRAM" == "vscode" ]] && . "$(code --locate-shell-integration-path zsh)"
+{{- end }}

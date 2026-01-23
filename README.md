@@ -1,90 +1,92 @@
-# Aaron's .files
+# Aaron's Dotfiles
 
-## Setup a new mac
+Chezmoi-managed dotfiles for macOS and Linux environments.
 
-1. Set hostname
+## What's Included
 
-   ```
-   sudo scutil --set HostName <hostname>
-   sudo scutil --set LocalHostName <hostname>
-   sudo scutil --set ComputerName <hostname>
-   dscacheutil -flushcache
-   sudo shutdown -r now
-   ```
+- **Shell**: Zsh with Powerlevel10k prompt, Zim framework
+- **Editor**: Neovim (LazyVim config)
+- **Terminal**: WezTerm (macOS), tmux
+- **CLI Tools**: eza, fzf, zoxide, ripgrep, fd, lazygit, delta, htop
 
-2. Grant access to terminal to edit applications
+## Quick Start
 
-    System Settings -> Privacy & Security -> Full Disk Access
-    - Add terminal
-    
-    System Settings -> Privacy & Security -> App Management
-    - Add Terminal
+### macOS
 
-3. Install command line tools
-
+1. Install Xcode CLI tools and Homebrew:
    ```sh
    xcode-select --install
+   /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+   eval $(/opt/homebrew/bin/brew shellenv)
    ```
 
-4. Install Homebrew & Chezmoi
-
+2. Install and apply dotfiles:
    ```sh
-   # Install Homebrew
-   /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-
-   # Update path
-   eval $(/opt/homebrew/bin/brew shellenv)
-
-   # Install Chezmoi
    brew install chezmoi
-
-   # Apply config from this repo
    chezmoi init aaronblair --apply
    ```
 
-5. SSH Key Setup
+### Linux / Docker
 
-   Either generate a new key or restore from secure backup:
-   ```sh
-   # Generate new key
-   ssh-keygen -t ed25519 -C "your_email@example.com"
+```sh
+# Install chezmoi
+sh -c "$(curl -fsLS get.chezmoi.io)" -- -b /usr/local/bin
 
-   # Start ssh-agent and add key
-   eval "$(ssh-agent -s)"
-   ssh-add ~/.ssh/id_ed25519
+# Set identity (optional)
+export CHEZMOI_EMAIL=you@example.com
+export CHEZMOI_NAME="Your Name"
 
-   # Copy public key to clipboard
-   pbcopy < ~/.ssh/id_ed25519.pub
-   ```
+# Apply dotfiles
+chezmoi init aaronblair --apply
+```
 
-   Add key to GitHub: https://github.com/settings/keys
+## macOS Post-Install
 
-6. Authenticate GitHub CLI
+<details>
+<summary>Expand for full macOS setup steps</summary>
 
-   ```sh
-   gh auth login
-   ```
+### Set Hostname
 
-7. Manual tasks
+```sh
+sudo scutil --set HostName <hostname>
+sudo scutil --set LocalHostName <hostname>
+sudo scutil --set ComputerName <hostname>
+dscacheutil -flushcache
+sudo shutdown -r now
+```
 
-   - Turn on FileVault
-   ```sh
-   # Enables FileVault - be sure to backup recovery key
-   sudo fdesetup enable
-   ```
+### System Permissions
 
-   - Grant full disk access to apps that need it
-     - Alfred
-     - WezTerm
+Grant access before running chezmoi:
 
-   - Sign into apps
-     - Bitwarden
-     - Google Drive
-     - Notion
-     - Obsidian
-     - Brave Browser (sync)
-     - VSCode (Settings Sync)
+- System Settings → Privacy & Security → Full Disk Access → Add Terminal
+- System Settings → Privacy & Security → App Management → Add Terminal
 
-   - Disable useless shortcuts in Keyboard settings
+### SSH Key Setup
 
-   - (If doing mobile dev) Install Android Studio SDK
+Generate a new key or restore from secure backup:
+
+```sh
+ssh-keygen -t ed25519 -C "your_email@example.com"
+eval "$(ssh-agent -s)"
+ssh-add ~/.ssh/id_ed25519
+pbcopy < ~/.ssh/id_ed25519.pub
+```
+
+Add to GitHub: https://github.com/settings/keys
+
+### Authenticate GitHub CLI
+
+```sh
+gh auth login
+```
+
+### Manual Tasks
+
+- Enable FileVault: `sudo fdesetup enable`
+- Grant Full Disk Access to Alfred, WezTerm
+- Sign into apps (Bitwarden, Google Drive, Notion, Obsidian, Brave, VSCode)
+- Disable unused keyboard shortcuts in System Settings
+- (If doing mobile dev) Install Android Studio SDK
+
+</details>

@@ -1,0 +1,31 @@
+{{- if eq .chezmoi.os "linux" -}}
+#!/bin/sh
+set -e
+
+echo "[chezmoi] Installing packages for Linux..."
+
+# Determine if we need sudo
+if [ "$(id -u)" -eq 0 ]; then
+    SUDO=""
+else
+    SUDO="sudo"
+fi
+
+if command -v apk > /dev/null 2>&1; then
+    echo "[chezmoi] Detected Alpine (apk)"
+    apk add --no-cache \
+        eza fzf zoxide neovim ripgrep fd lazygit delta htop tmux git zsh
+
+elif command -v apt-get > /dev/null 2>&1; then
+    echo "[chezmoi] Detected Debian/Ubuntu (apt)"
+    $SUDO apt-get update
+    $SUDO apt-get install -y \
+        eza fzf zoxide neovim ripgrep fd-find htop tmux git zsh
+
+    # lazygit and delta may need manual install on older Ubuntu
+    command -v lazygit > /dev/null 2>&1 || echo "[chezmoi] Note: lazygit not in apt"
+    command -v delta > /dev/null 2>&1 || echo "[chezmoi] Note: delta not in apt"
+fi
+
+echo "[chezmoi] Linux package installation complete"
+{{- end -}}

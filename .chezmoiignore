@@ -3,3 +3,14 @@ AGENTS.md
 prd.md
 .clavix/
 .opencode/
+
+{{- if ne .chezmoi.os "darwin" }}
+# Darwin-only (skip on Linux)
+Library/
+run_once_*darwin*
+{{- end }}
+
+{{- if not (env "DISPLAY") }}
+# GUI apps not needed in headless environments
+dot_wezterm.lua
+{{- end }}

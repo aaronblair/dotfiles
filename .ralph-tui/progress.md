@@ -36,3 +36,12 @@ f1855ffej461SPd6hw5J2G","messageID":"msg_beed1c853001V0ynXDIVa2mswU","type":"tex
 025hUbr0wdoR2099","sessionID":"ses_4112e1aecffe8qCRqI9dWqscuR","messageID":"msg_beed2c132001DrEPq7L8905PCz","type":"text","text":"Done.\n\n**Summary:**\n- The file `.chezmoiscripts/run_onchange_after_10-gnome-settings.sh.tmpl` referenced in the PRD does not exist\n- No gnome/dconf/gsettings code exists anywhere in the repository\n- Story US-003 is a no-op - the acceptance criteria are trivially satisfied\n- `chezmoi apply --dry-run` passes\n- Committed with empty commit explaining N/A status\n\n
 
 ---
+## ✓ Iteration 4 - US-004: Audit and clean remaining container references
+*2026-01-24T07:06:41.613Z (48s)*
+
+**Status:** Completed
+
+**Notes:**
+EHEf4B4e2BEM9T","messageID":"msg_beed37db5001AputXtyEUvCx4F","type":"text","text":"**Summary:**\n\nAudited the codebase and found one remaining container reference in `.chezmoiignore` (line 13). Removed the `/.dockerenv` and `CONTAINER` env var checks, simplifying the condition to only check for `DISPLAY`. Toolbox p10k segment preserved as required.\n\n✅ Container references removed from templates\n✅ Toolbox display logic preserved (4 refs in dot_p10k.zsh)\n✅ `chezmoi apply --dry-run` passes\n\n
+
+---

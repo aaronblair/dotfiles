@@ -82,14 +82,15 @@
         "chezmoi apply --dry-run passes"
       ],
       "priority": 3,
-      "passes": false,
+      "passes": true,
       "notes": "",
       "dependsOn": [
         "US-004"
-      ]
+      ],
+      "completionNotes": "Completed by agent"
     }
   ],
   "metadata": {
-    "updatedAt": "2026-01-24T07:06:41.586Z"
+    "updatedAt": "2026-01-24T07:07:17.254Z"
   }
 }

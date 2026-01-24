@@ -9,17 +9,6 @@ Chezmoi-managed dotfiles for macOS and Linux environments.
 - **Terminal**: WezTerm (macOS), tmux
 - **CLI Tools**: eza, fzf, zoxide, ripgrep, fd, lazygit, delta, htop
 
-## Security Note for Container Usage
-
-When used with Docker, chezmoi runs at **build time**. Dotfiles content and build args (`CHEZMOI_EMAIL`, `CHEZMOI_NAME`) are baked into image layers.
-
-**Do not add to this repo:**
-- API keys, passwords, or tokens
-- Private SSH keys
-- 1Password/Bitwarden template functions
-
-This repo is safe for build-time usage—it contains only shell config, package lists, and non-sensitive templates.
-
 ## Quick Start
 
 ### macOS
@@ -37,7 +26,7 @@ This repo is safe for build-time usage—it contains only shell config, package 
    chezmoi init aaronblair --apply
    ```
 
-### Linux / Docker
+### Linux (Server)
 
 ```sh
 # Install chezmoi

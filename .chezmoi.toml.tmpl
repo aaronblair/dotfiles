@@ -1,7 +1,9 @@
 {{- /* Use env var, then existing config, then default */ -}}
 {{- $email := coalesce (env "CHEZMOI_EMAIL") (get . "email") "dev@example.com" -}}
 {{- $fullname := coalesce (env "CHEZMOI_NAME") (get . "fullname") "Aaron Blair" -}}
+{{- $headless := not (env "DISPLAY") -}}
 
 [data]
     fullname = {{ $fullname | quote }}
     email = {{ $email | quote }}
+    headless = {{ $headless }}

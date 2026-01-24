@@ -1,0 +1,92 @@
+{
+  "name": "Remove Container Logic from Chezmoi Dotfiles",
+  "description": "Clean up container-related logic from chezmoi dotfiles repository. Scoped to personal laptop and Linux server use cases only.",
+  "branchName": "ralph/remove-container-logic",
+  "userStories": [
+    {
+      "id": "US-001",
+      "title": "Simplify headless detection in chezmoidata",
+      "description": "As a user, I want the headless variable to only check for DISPLAY so that container detection is removed but SSH-to-headless-server still works.",
+      "acceptanceCriteria": [
+        ".chezmoidata.yaml headless logic removes (stat \"/.dockerenv\") check",
+        "Headless is now simply {{ not (env \"DISPLAY\") }}",
+        "Templates using headless continue to work correctly",
+        "chezmoi apply --dry-run passes"
+      ],
+      "priority": 1,
+      "passes": true,
+      "notes": "",
+      "dependsOn": [],
+      "completionNotes": "Completed by agent"
+    },
+    {
+      "id": "US-002",
+      "title": "Remove container checks from verify-prereqs script",
+      "description": "As a user, I want container detection removed from the prerequisites script so that container-specific logic is cleaned up.",
+      "acceptanceCriteria": [
+        ".chezmoiscripts/run_once_before_00-verify-prereqs.sh.tmpl removes container detection",
+        "Any conditional logic gated on container detection is removed or simplified",
+        "Script still validates prerequisites for laptop/server use cases",
+        "chezmoi apply --dry-run passes"
+      ],
+      "priority": 1,
+      "passes": false,
+      "notes": "",
+      "dependsOn": []
+    },
+    {
+      "id": "US-003",
+      "title": "Remove container checks from gnome-settings script",
+      "description": "As a user, I want container detection removed from the GNOME settings script so that it only checks for relevant conditions.",
+      "acceptanceCriteria": [
+        ".chezmoiscripts/run_onchange_after_10-gnome-settings.sh.tmpl removes container checks",
+        "Script still correctly skips on headless systems (no DISPLAY)",
+        "Script still applies GNOME settings when DISPLAY is available",
+        "chezmoi apply --dry-run passes"
+      ],
+      "priority": 1,
+      "passes": false,
+      "notes": "",
+      "dependsOn": []
+    },
+    {
+      "id": "US-004",
+      "title": "Audit and clean remaining container references",
+      "description": "As a user, I want all remaining container detection logic removed so that the codebase is consistent.",
+      "acceptanceCriteria": [
+        "Search codebase for dockerenv, container env var checks, and similar patterns",
+        "Remove any remaining container-specific conditionals",
+        "Preserve toolbox-related display logic (p10k segment) as this shows container entry, not detection",
+        "chezmoi apply --dry-run passes"
+      ],
+      "priority": 2,
+      "passes": false,
+      "notes": "",
+      "dependsOn": [
+        "US-001",
+        "US-002",
+        "US-003"
+      ]
+    },
+    {
+      "id": "US-005",
+      "title": "Update README documentation",
+      "description": "As a user, I want README to reflect the current scope so that documentation is accurate.",
+      "acceptanceCriteria": [
+        "Remove references to container/Codespaces support",
+        "Remove any container-related setup instructions",
+        "Ensure README accurately describes laptop + Linux server use case",
+        "chezmoi apply --dry-run passes"
+      ],
+      "priority": 3,
+      "passes": false,
+      "notes": "",
+      "dependsOn": [
+        "US-004"
+      ]
+    }
+  ],
+  "metadata": {
+    "updatedAt": "2026-01-24T07:03:44.480Z"
+  }
+}

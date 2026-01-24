@@ -1,7 +1,7 @@
 README.md
 AGENTS.md
 prd.md
-.clavix/
+.ralph-tui
 .opencode/
 
 {{- if ne .chezmoi.os "darwin" }}

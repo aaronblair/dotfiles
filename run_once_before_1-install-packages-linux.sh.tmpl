@@ -1,4 +1,4 @@
-{{- if and (eq .chezmoi.os "linux") (not (env "CONTAINER")) -}}
+{{- if eq .chezmoi.os "linux" -}}
 #!/bin/sh
 set -e
 

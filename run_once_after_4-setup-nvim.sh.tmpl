@@ -1,0 +1,14 @@
+{{- if or (eq .chezmoi.os "darwin") (eq .chezmoi.os "linux") -}}
+#!/bin/sh
+set -e
+
+echo "[chezmoi] Initializing neovim..."
+
+# Sync lazy.nvim plugins
+nvim --headless "+Lazy! sync" +qa 2>/dev/null || true
+
+# Install common treesitter parsers
+nvim --headless "+TSInstall! lua bash json yaml markdown javascript typescript tsx python go dockerfile html css" +qa 2>/dev/null || true
+
+echo "[chezmoi] Neovim initialization complete"
+{{- end -}}

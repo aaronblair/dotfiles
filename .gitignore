@@ -1,0 +1,16 @@
+# Task/session management tools
+.opencode/
+.ralph-tui/
+.clavix/
+tasks/
+
+# Editor/IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db

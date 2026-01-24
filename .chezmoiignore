@@ -1,8 +1,11 @@
 README.md
 AGENTS.md
 prd.md
-.ralph-tui
+.ralph-tui/
 .opencode/
+.clavix/
+tasks/
+.gitignore
 
 {{- if ne .chezmoi.os "darwin" }}
 # Darwin-only (skip on Linux)

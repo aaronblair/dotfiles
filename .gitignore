@@ -1,8 +1,5 @@
-# Task/session management tools
+# Local OpenCode/plugin state
 .opencode/
-.ralph-tui/
-.clavix/
-tasks/
 
 # Editor/IDE
 .idea/
@@ -14,4 +11,3 @@ tasks/
 # OS
 .DS_Store
 Thumbs.db
-AGENTS.md

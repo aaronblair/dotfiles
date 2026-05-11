@@ -1,0 +1,40 @@
+font-family = MesloLGS NF
+font-size = 12
+theme = Catppuccin Macchiato
+
+shell-integration = detect
+shell-integration-features = cursor,sudo,title,ssh-env,ssh-terminfo,path
+
+macos-option-as-alt = left
+macos-titlebar-style = transparent
+window-save-state = default
+confirm-close-surface = true
+
+# Unbind Ghostty shortcuts that should be handled by Zellij instead.
+keybind = super+d=unbind
+keybind = super+shift+d=unbind
+keybind = super+t=unbind
+keybind = super+w=unbind
+keybind = super+1=unbind
+keybind = super+digit_1=unbind
+keybind = super+2=unbind
+keybind = super+digit_2=unbind
+keybind = super+3=unbind
+keybind = super+digit_3=unbind
+keybind = super+4=unbind
+keybind = super+digit_4=unbind
+keybind = super+alt+arrow_left=unbind
+keybind = super+alt+arrow_right=unbind
+
+# Let Cmd+K send form feed so Zellij/shell handles clear screen.
+keybind = super+k=text:\x0c
+
+clipboard-read = ask
+clipboard-write = allow
+clipboard-paste-protection = true
+copy-on-select = true
+mouse-hide-while-typing = true
+
+cursor-style = block
+cursor-style-blink = false
+scrollback-limit = 50000000

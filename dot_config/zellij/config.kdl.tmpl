@@ -1,0 +1,34 @@
+keybinds {
+    unbind "Alt f" "Alt Left" "Alt Right"
+
+    normal {
+        bind "Super t" { NewTab; }
+        bind "Super w" { CloseFocus; }
+        bind "Super 1" { GoToTab 1; }
+        bind "Super 2" { GoToTab 2; }
+        bind "Super 3" { GoToTab 3; }
+        bind "Super 4" { GoToTab 4; }
+
+        bind "Super d" { NewPane "Right"; }
+        bind "Super Shift d" { NewPane "Down"; }
+
+        bind "Super Alt Left" { GoToPreviousTab; }
+        bind "Super Alt Right" { GoToNextTab; }
+    }
+
+    shared_except "locked" {
+        bind "Alt Shift f" { ToggleFloatingPanes; SwitchToMode "normal"; }
+    }
+}
+
+theme "catppuccin-macchiato"
+default_mode "normal"
+scroll_buffer_size 100000
+session_serialization true
+
+ui {
+    pane_frames {
+        rounded_corners true
+        hide_session_name true
+    }
+}

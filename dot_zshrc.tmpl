@@ -30,6 +30,7 @@ fi
 
 # Claude Code
 export PATH="$HOME/.local/bin:$PATH"
+typeset -U path PATH
 
 {{- if eq .chezmoi.os "darwin" }}
 # NVM setup (sourced after zim init to avoid compinit conflict)
@@ -192,7 +193,7 @@ unset key
 
 {{- if eq .chezmoi.os "darwin" }}
 # NVM (Homebrew)
-[ -s "/opt/homebrew/opt/nvm/nvm.sh" ] && \. "/opt/homebrew/opt/nvm/nvm.sh"
+[[ -n "${HOMEBREW_PREFIX:-}" ]] && [ -s "${HOMEBREW_PREFIX}/opt/nvm/nvm.sh" ] && \. "${HOMEBREW_PREFIX}/opt/nvm/nvm.sh"
 
 # Bun completions
 [ -s "{{ .chezmoi.homeDir }}/.bun/_bun" ] && source "{{ .chezmoi.homeDir }}/.bun/_bun"

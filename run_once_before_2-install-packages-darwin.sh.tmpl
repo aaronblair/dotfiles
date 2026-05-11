@@ -3,7 +3,7 @@
 
 brew analytics off
 
-brew bundle --file=/dev/stdin <<EOF
+brew bundle --no-upgrade --file=/dev/stdin <<EOF
 brew "ast-grep" # Used by vim
 brew "bfs" # Used by fzf & zsh
 brew "chezmoi"
@@ -31,6 +31,7 @@ brew "tree"
 brew "uv"
 brew "wget"
 brew "yt-dlp"
+brew "zellij"
 brew "zoxide"
 cask "alfred"
 cask "balenaetcher"
@@ -48,8 +49,16 @@ cask "syncthing-app"
 cask "transmission-remote-gui"
 cask "visual-studio-code"
 cask "vlc"
+cask "ghostty"
 cask "wezterm"
 cask "whatsapp"
+vscode "kilocode.kilo-code"
+vscode "ms-vscode.cpptools"
+vscode "platformio.platformio-ide"
+EOF
+
+if mas account > /dev/null 2>&1; then
+  brew bundle --no-upgrade --file=/dev/stdin <<EOF || echo "[chezmoi] Some Mac App Store apps could not be installed; continuing."
 mas "Amphetamine", id: 937984704
 mas "Bitwarden", id: 1352778147
 mas "Brother iPrint&Scan", id: 1193539993
@@ -58,8 +67,8 @@ mas "The Unarchiver", id: 425424353
 mas "Todoist", id: 585829637
 mas "Unsplash Wallpapers", id: 1284863847
 mas "WireGuard", id: 1451685025
-vscode "kilocode.kilo-code"
-vscode "ms-vscode.cpptools"
-vscode "platformio.platformio-ide"
 EOF
+else
+  echo "[chezmoi] Not signed into the Mac App Store; skipping mas apps."
+fi
 {{ end -}}

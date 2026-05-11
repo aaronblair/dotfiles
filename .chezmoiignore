@@ -10,7 +10,8 @@ Library/
 run_once_*darwin*
 {{- end }}
 
-{{- if not (env "DISPLAY") }}
+{{- if and (ne .chezmoi.os "darwin") (not (env "DISPLAY")) }}
 # GUI apps not needed in headless environments
 dot_wezterm.lua
+dot_config/ghostty/
 {{- end }}

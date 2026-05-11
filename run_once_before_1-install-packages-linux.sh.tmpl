@@ -2,6 +2,8 @@
 #!/bin/sh
 set -e
 
+ZELLIJ_VERSION="0.44.1"
+
 echo "[chezmoi] Installing packages for Linux..."
 
 # Determine if we need sudo
@@ -14,17 +16,46 @@ fi
 if command -v apk > /dev/null 2>&1; then
     echo "[chezmoi] Detected Alpine (apk)"
     apk add --no-cache \
-        eza fzf zoxide neovim ripgrep fd lazygit delta htop tmux git zsh
+        curl eza fzf zoxide neovim ripgrep fd lazygit delta htop tmux git zsh zellij \
+        || apk add --no-cache \
+            curl eza fzf zoxide neovim ripgrep fd lazygit delta htop tmux git zsh
 
 elif command -v apt-get > /dev/null 2>&1; then
     echo "[chezmoi] Detected Debian/Ubuntu (apt)"
     $SUDO apt-get update
     $SUDO apt-get install -y \
-        eza fzf zoxide neovim ripgrep fd-find htop tmux git zsh
+        curl eza fzf zoxide neovim ripgrep fd-find htop tmux git zsh
 
     # lazygit and delta may need manual install on older Ubuntu
     command -v lazygit > /dev/null 2>&1 || echo "[chezmoi] Note: lazygit not in apt"
     command -v delta > /dev/null 2>&1 || echo "[chezmoi] Note: delta not in apt"
+fi
+
+if ! command -v zellij > /dev/null 2>&1; then
+    echo "[chezmoi] Installing Zellij ${ZELLIJ_VERSION} to ~/.local/bin..."
+
+    case "$(uname -m)" in
+        x86_64|amd64) ZELLIJ_ARCH="x86_64-unknown-linux-musl" ;;
+        aarch64|arm64) ZELLIJ_ARCH="aarch64-unknown-linux-musl" ;;
+        *)
+            echo "[chezmoi] Unsupported architecture for Zellij binary: $(uname -m)"
+            exit 0
+            ;;
+    esac
+
+    mkdir -p "$HOME/.local/bin"
+    TMPDIR="$(mktemp -d)"
+    trap 'rm -rf "$TMPDIR"' EXIT HUP INT TERM
+
+    URL="https://github.com/zellij-org/zellij/releases/download/v${ZELLIJ_VERSION}/zellij-${ZELLIJ_ARCH}.tar.gz"
+    if command -v curl > /dev/null 2>&1; then
+        curl -fsSL "$URL" -o "$TMPDIR/zellij.tar.gz"
+    else
+        wget -qO "$TMPDIR/zellij.tar.gz" "$URL"
+    fi
+
+    tar -xzf "$TMPDIR/zellij.tar.gz" -C "$TMPDIR"
+    install -m 0755 "$TMPDIR/zellij" "$HOME/.local/bin/zellij"
 fi
 
 echo "[chezmoi] Linux package installation complete"

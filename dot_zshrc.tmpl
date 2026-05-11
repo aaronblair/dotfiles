@@ -17,10 +17,26 @@
 # TMUX Shortcut
 alias tm='tmux attach-session -t default || tmux new -t default'
 
-# Map vi and vim to nvim
+# Zellij shortcuts
+if type zellij > /dev/null 2>&1; then
+  alias zj='zellij attach -c main'
+  alias zja='zellij attach'
+  alias zjl='zellij list-sessions'
+fi
+
+# Set the default editor with nvim > vim > vi fallback
 if type nvim > /dev/null 2>&1; then
+  export VISUAL='nvim'
+  export EDITOR='nvim'
   alias vim='nvim'
   alias vi='nvim'
+elif type vim > /dev/null 2>&1; then
+  export VISUAL='vim'
+  export EDITOR='vim'
+  alias vi='vim'
+else
+  export VISUAL='vi'
+  export EDITOR='vi'
 fi
 
 # Use eza instead of ls

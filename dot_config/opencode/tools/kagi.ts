@@ -44,7 +44,8 @@ function compactSearchResults(raw: string): string {
   }
 }
 
-function escapeShellArg(s: string): string {
+function escapeShellArg(s: string | undefined): string {
+  if (s == null) return "''"
   return `'${s.replace(/'/g, "'\\''")}'`
 }
 
@@ -64,9 +65,8 @@ export const search = tool({
       .int()
       .min(1)
       .max(20)
-      .default(10)
       .optional()
-      .describe("Max results to return (1-20, default 10). Use fewer for simple lookups."),
+      .describe("Max results to return (1-20). Defaults to 10. Use fewer for simple lookups."),
   },
   async execute(args) {
     const parts = [`kagi-ken-cli search ${escapeShellArg(args.query)}`]
@@ -84,29 +84,19 @@ export const summarize = tool({
     "Provide EITHER a url OR text, not both. " +
     "Useful for digesting long articles, videos, or podcasts.",
   args: {
-    url: tool.schema
-      .string()
-      .optional()
-      .describe("URL to summarize (webpage, video, podcast, etc.)"),
-    text: tool.schema
-      .string()
-      .optional()
-      .describe("Raw text to summarize (use url instead when possible)"),
-    type: tool.schema
-      .enum(["summary", "takeaway"])
-      .default("summary")
-      .describe(
-        "Output type: 'summary' (paragraph), 'takeaway' (bullet points)",
-      ),
-    language: tool.schema
-      .string()
-      .default("EN")
-      .describe("Two-letter language code for the summary output (e.g. EN, DE, FR)"),
+    url: tool.schema.string().optional().describe("URL to summarize (webpage, video, podcast, etc.)"),
+    text: tool.schema.string().optional().describe("Raw text to summarize (use url instead when possible)"),
+    type: tool.schema.string().optional().describe("Output type: 'summary' (paragraph) or 'takeaway' (bullet points). Defaults to 'summary'."),
+    language: tool.schema.string().optional().describe("Two-letter language code for the summary output (e.g. EN, DE, FR). Defaults to 'EN'."),
   },
   async execute(args) {
-    if (!args.url && !args.text) {
+    const url = args.url || args.text
+    if (!url) {
       return "Error: provide either 'url' or 'text'."
     }
+
+    const type = args.type ?? "summary"
+    const language = args.language ?? "EN"
 
     const parts = ["kagi-ken-cli summarize"]
 
@@ -116,8 +106,8 @@ export const summarize = tool({
       parts.push(`--text ${escapeShellArg(args.text)}`)
     }
 
-    parts.push(`--type ${escapeShellArg(args.type)}`)
-    parts.push(`--language ${escapeShellArg(args.language)}`)
+    parts.push(`--type ${escapeShellArg(type)}`)
+    parts.push(`--language ${escapeShellArg(language)}`)
 
     return run(parts.join(" "))
   },

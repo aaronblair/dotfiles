@@ -2,8 +2,6 @@
 #!/bin/sh
 set -e
 
-ZELLIJ_VERSION="0.44.3"
-
 echo "[chezmoi] Installing packages for Linux..."
 
 # Determine if we need sudo
@@ -23,8 +21,16 @@ if command -v apk > /dev/null 2>&1; then
 elif command -v apt-get > /dev/null 2>&1; then
     echo "[chezmoi] Detected Debian/Ubuntu (apt)"
     $SUDO apt-get update
+
+    APT_PACKAGES="curl eza fzf zoxide neovim ripgrep fd-find htop tmux git zsh"
+    if apt-cache show zellij > /dev/null 2>&1; then
+        APT_PACKAGES="$APT_PACKAGES zellij"
+    else
+        echo "[chezmoi] Note: zellij not available in apt; will install latest release if needed"
+    fi
+
     $SUDO apt-get install -y \
-        curl eza fzf zoxide neovim ripgrep fd-find htop tmux git zsh
+        $APT_PACKAGES
 
     # lazygit and delta may need manual install on older Ubuntu
     command -v lazygit > /dev/null 2>&1 || echo "[chezmoi] Note: lazygit not in apt"
@@ -32,7 +38,7 @@ elif command -v apt-get > /dev/null 2>&1; then
 fi
 
 if ! command -v zellij > /dev/null 2>&1; then
-    echo "[chezmoi] Installing Zellij ${ZELLIJ_VERSION} to ~/.local/bin..."
+    echo "[chezmoi] Installing latest Zellij release to ~/.local/bin..."
 
     case "$(uname -m)" in
         x86_64|amd64) ZELLIJ_ARCH="x86_64-unknown-linux-musl" ;;
@@ -47,7 +53,7 @@ if ! command -v zellij > /dev/null 2>&1; then
     TMPDIR="$(mktemp -d)"
     trap 'rm -rf "$TMPDIR"' EXIT HUP INT TERM
 
-    URL="https://github.com/zellij-org/zellij/releases/download/v${ZELLIJ_VERSION}/zellij-${ZELLIJ_ARCH}.tar.gz"
+    URL="https://github.com/zellij-org/zellij/releases/latest/download/zellij-${ZELLIJ_ARCH}.tar.gz"
     if command -v curl > /dev/null 2>&1; then
         curl -fsSL "$URL" -o "$TMPDIR/zellij.tar.gz"
     else

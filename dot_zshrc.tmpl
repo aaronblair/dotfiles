@@ -26,7 +26,7 @@ ocu() {
   fi
 
   if command -v brew > /dev/null 2>&1 && brew list --versions opencode > /dev/null 2>&1; then
-    if brew outdated opencode > /dev/null 2>&1; then
+    if [[ -n "$(brew outdated opencode 2> /dev/null)" ]]; then
       print 'Updating opencode via Homebrew...'
       brew upgrade opencode
     else

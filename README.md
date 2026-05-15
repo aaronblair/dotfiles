@@ -40,6 +40,12 @@ export CHEZMOI_NAME="Your Name"
 chezmoi init aaronblair --apply
 ```
 
+## OpenCode
+
+- macOS: install and update `opencode` with Homebrew
+- Ubuntu/Linux: prefer the upstream direct install and update with `opencode upgrade`
+- Shell shortcuts in `~/.zshrc`: `oc`, `occ`, `ocu`
+
 ## macOS Post-Install
 
 <details>

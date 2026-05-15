@@ -16,6 +16,28 @@ fi
 
 # TMUX Shortcut
 alias tm='tmux attach-session -t default || tmux new -t default'
+alias oc='opencode'
+alias occ='opencode --continue'
+
+ocu() {
+  if ! command -v opencode > /dev/null 2>&1; then
+    print 'opencode is not installed'
+    return 1
+  fi
+
+  if command -v brew > /dev/null 2>&1 && brew list --versions opencode > /dev/null 2>&1; then
+    if brew outdated opencode > /dev/null 2>&1; then
+      print 'Updating opencode via Homebrew...'
+      brew upgrade opencode
+    else
+      print 'opencode is already up to date'
+    fi
+    return
+  fi
+
+  print 'Updating opencode via opencode upgrade...'
+  opencode upgrade
+}
 
 # Zellij shortcuts
 if type zellij > /dev/null 2>&1; then
@@ -46,6 +68,7 @@ fi
 
 # Claude Code
 export PATH="$HOME/.local/bin:$PATH"
+export HOMEBREW_NO_ENV_HINTS=1
 typeset -U path PATH
 
 {{- if eq .chezmoi.os "darwin" }}

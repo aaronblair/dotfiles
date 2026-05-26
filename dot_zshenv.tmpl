@@ -19,6 +19,12 @@
 # Debian/Ubuntu initialize completion globally unless this is set before /etc/zsh/zshrc.
 skip_global_compinit=1
 
+if [[ -n "${TERM:-}" && "${TERM:-}" != dumb && "${TERM:-}" != linux ]] \
+  && (( ${+commands[infocmp]} )) \
+  && ! infocmp "$TERM" > /dev/null 2>&1; then
+  export TERM=xterm-256color
+fi
+
 path=("$HOME/.local/bin" $path)
 {{- if or $isDev $isAi }}
 export BUN_INSTALL="$HOME/.bun"

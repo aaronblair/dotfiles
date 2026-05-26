@@ -13,6 +13,7 @@ packages:
           - htop
           - jq
           - less
+          - ncurses-term
           - neovim
           - openssh-client
           - ripgrep
@@ -45,6 +46,7 @@ packages:
           - htop
           - jq
           - less
+          - ncurses-terminfo
           - neovim
           - openssh-client-default
           - ripgrep

@@ -12,8 +12,10 @@
 {{- end -}}
 {{- end -}}
 {{- $isMacos := eq $profile "macos" -}}
+{{- $isServer := eq $profile "server" -}}
 {{- $isDev := eq $profile "dev" -}}
 {{- $isAi := eq $profile "ai" -}}
+{{- $isLinux := or $isServer $isDev $isAi -}}
 {{- $hasDisplay := $isMacos -}}
 {{- $hasDisplayEnv := env "CHEZMOI_HAS_DISPLAY" -}}
 {{- if or (eq $hasDisplayEnv "1") (eq $hasDisplayEnv "true") -}}
@@ -37,6 +39,12 @@ Users/**
 # Darwin-only (skip on Linux)
 Library/
 run_once_*darwin*
+{{- end }}
+
+{{- if not $isLinux }}
+# Linux-only
+.zshenv
+run_once_*linux*
 {{- end }}
 
 {{- if not $hasDisplay }}

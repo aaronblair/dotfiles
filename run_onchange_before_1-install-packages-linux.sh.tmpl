@@ -26,7 +26,7 @@
 set -eu
 
 ZELLIJ_VERSION="0.44.3"
-PATH="$HOME/.local/bin:$HOME/.bun/bin:$PATH"
+PATH="$HOME/.local/bin:$HOME/.bun/bin:$HOME/.opencode/bin:$PATH"
 
 if [ "{{ $profileValid }}" != "true" ]; then
     echo "[chezmoi] {{ $profileError }}"
@@ -102,7 +102,7 @@ install_apt_packages() {
     available=""
     skipped=""
 
-    $SUDO apt-get update
+    $SUDO env DEBIAN_FRONTEND=noninteractive LANG=C.UTF-8 LC_ALL=C.UTF-8 apt-get update
 
     for pkg in $packages; do
         if apt-cache show "$pkg" > /dev/null 2>&1; then
@@ -114,7 +114,7 @@ install_apt_packages() {
 
     if [ -n "$available" ]; then
         # shellcheck disable=SC2086
-        $SUDO apt-get install -y $available
+        $SUDO env DEBIAN_FRONTEND=noninteractive LANG=C.UTF-8 LC_ALL=C.UTF-8 apt-get install -y $available
     fi
 
     if [ -n "$skipped" ]; then

@@ -1,0 +1,49 @@
+{{- $profile := get . "profile" -}}
+{{- if eq $profile "" -}}
+{{- $profile = env "CHEZMOI_PROFILE" -}}
+{{- if eq $profile "" -}}
+{{- if eq .chezmoi.os "darwin" -}}
+{{- $profile = "macos" -}}
+{{- else if eq .chezmoi.os "linux" -}}
+{{- $profile = "server" -}}
+{{- else -}}
+{{- $profile = .chezmoi.os -}}
+{{- end -}}
+{{- end -}}
+{{- end -}}
+{{- $isServer := eq $profile "server" -}}
+{{- $isDev := eq $profile "dev" -}}
+{{- $isAi := eq $profile "ai" -}}
+{{- if or $isServer $isDev $isAi -}}
+#!/bin/sh
+set -eu
+
+if ! command -v zsh > /dev/null 2>&1; then
+    echo "[chezmoi] zsh is not installed; skipping shell configuration"
+    exit 0
+fi
+
+zsh_path="$(command -v zsh)"
+current_user="$(id -un)"
+current_shell="$(awk -F: -v user="$current_user" '$1 == user { print $7 }' /etc/passwd)"
+
+if [ "$current_shell" = "$zsh_path" ]; then
+    exit 0
+fi
+
+echo "[chezmoi] Setting login shell to $zsh_path..."
+
+if [ "$(id -u)" -eq 0 ]; then
+    SUDO=""
+else
+    SUDO="sudo"
+fi
+
+if command -v usermod > /dev/null 2>&1; then
+    $SUDO usermod --shell "$zsh_path" "$current_user"
+elif command -v chsh > /dev/null 2>&1; then
+    $SUDO chsh -s "$zsh_path" "$current_user"
+else
+    echo "[chezmoi] Could not find usermod or chsh; skipping shell configuration"
+fi
+{{- end -}}

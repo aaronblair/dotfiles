@@ -34,6 +34,15 @@ fi
 # AB config
 # ---------
 
+{{- if or $isDev $isAi }}
+export BUN_INSTALL="$HOME/.bun"
+{{- end }}
+{{- if $isMacos }}
+export PATH="$HOME/.local/bin:$PATH"
+typeset -U path PATH
+{{- end }}
+export HOMEBREW_NO_ENV_HINTS=1
+
 # TMUX Shortcut
 alias tm='tmux attach-session -t default || tmux new -t default'
 {{- if $managesOpencode }}
@@ -96,11 +105,6 @@ fi
 if ! type fd > /dev/null 2>&1 && type fdfind > /dev/null 2>&1; then
   alias fd='fdfind'
 fi
-
-# Claude Code
-export PATH="$HOME/.local/bin:$PATH"
-export HOMEBREW_NO_ENV_HINTS=1
-typeset -U path PATH
 
 {{- if $isMacos }}
 # NVM setup (sourced after zim init to avoid compinit conflict)

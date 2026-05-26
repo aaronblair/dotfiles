@@ -3,6 +3,7 @@ packages:
     repo:
       apt:
         server:
+          - bash
           - ca-certificates
           - curl
           - eza
@@ -34,6 +35,7 @@ packages:
           - wget
       apk:
         server:
+          - bash
           - ca-certificates
           - curl
           - eza

@@ -1,0 +1,31 @@
+{{- $profile := get . "profile" -}}
+{{- if eq $profile "" -}}
+{{- $profile = env "CHEZMOI_PROFILE" -}}
+{{- if eq $profile "" -}}
+{{- if eq .chezmoi.os "darwin" -}}
+{{- $profile = "macos" -}}
+{{- else if eq .chezmoi.os "linux" -}}
+{{- $profile = "server" -}}
+{{- else -}}
+{{- $profile = .chezmoi.os -}}
+{{- end -}}
+{{- end -}}
+{{- end -}}
+{{- $isDev := eq $profile "dev" -}}
+{{- $isAi := eq $profile "ai" -}}
+{{- $managesOpencode := or (eq $profile "macos") $isDev $isAi -}}
+# Loaded by every zsh invocation; keep this file minimal and quiet.
+{{- if eq .chezmoi.os "linux" }}
+# Debian/Ubuntu initialize completion globally unless this is set before /etc/zsh/zshrc.
+skip_global_compinit=1
+
+path=("$HOME/.local/bin" $path)
+{{- if or $isDev $isAi }}
+export BUN_INSTALL="$HOME/.bun"
+path=("$BUN_INSTALL/bin" $path)
+{{- end }}
+{{- if $managesOpencode }}
+path=("$HOME/.opencode/bin" $path)
+{{- end }}
+typeset -U path PATH
+{{- end }}

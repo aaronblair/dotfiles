@@ -74,8 +74,15 @@ If `CHEZMOI_PROFILE` is not set, this repo currently defaults to `macos` on Darw
 ### Linux
 
 ```sh
-# Install chezmoi
-sh -c "$(curl -fsLS get.chezmoi.io)" -- -b /usr/local/bin
+# Install bootstrap prerequisites and chezmoi
+if command -v apt-get >/dev/null 2>&1; then
+  sudo env DEBIAN_FRONTEND=noninteractive LANG=C.UTF-8 LC_ALL=C.UTF-8 apt-get update
+  sudo env DEBIAN_FRONTEND=noninteractive LANG=C.UTF-8 LC_ALL=C.UTF-8 \
+    apt-get install -y ca-certificates curl git
+elif command -v apk >/dev/null 2>&1; then
+  sudo apk add --no-cache ca-certificates curl git
+fi
+curl -fsLS get.chezmoi.io | sudo sh -s -- -b /usr/local/bin
 
 # Choose a profile: server, dev, or ai
 export CHEZMOI_PROFILE=dev

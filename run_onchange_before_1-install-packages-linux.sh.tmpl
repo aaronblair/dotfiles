@@ -1,0 +1,239 @@
+{{- $profile := get . "profile" -}}
+{{- if eq $profile "" -}}
+{{- $profile = env "CHEZMOI_PROFILE" -}}
+{{- if eq $profile "" -}}
+{{- if eq .chezmoi.os "darwin" -}}
+{{- $profile = "macos" -}}
+{{- else if eq .chezmoi.os "linux" -}}
+{{- $profile = "server" -}}
+{{- else -}}
+{{- $profile = .chezmoi.os -}}
+{{- end -}}
+{{- end -}}
+{{- end -}}
+{{- $isMacos := eq $profile "macos" -}}
+{{- $isServer := eq $profile "server" -}}
+{{- $isDev := eq $profile "dev" -}}
+{{- $isAi := eq $profile "ai" -}}
+{{- $isLinux := or $isServer $isDev $isAi -}}
+{{- $profileValid := or $isMacos $isServer $isDev $isAi -}}
+{{- $profileError := "" -}}
+{{- if not $profileValid -}}
+{{- $profileError = printf "invalid CHEZMOI_PROFILE %q" $profile -}}
+{{- end -}}
+{{- if $isLinux -}}
+#!/bin/sh
+set -eu
+
+ZELLIJ_VERSION="0.44.3"
+PATH="$HOME/.local/bin:$HOME/.bun/bin:$PATH"
+
+if [ "{{ $profileValid }}" != "true" ]; then
+    echo "[chezmoi] {{ $profileError }}"
+    exit 1
+fi
+
+PROFILE="{{ $profile }}"
+
+APT_SERVER_PACKAGES='{{ range .packages.linux.repo.apt.server }}{{ . }} {{ end }}'
+APT_DEV_PACKAGES='{{ range .packages.linux.repo.apt.dev }}{{ . }} {{ end }}'
+APT_AI_PACKAGES='{{ range .packages.linux.repo.apt.ai }}{{ . }} {{ end }}'
+APK_SERVER_PACKAGES='{{ range .packages.linux.repo.apk.server }}{{ . }} {{ end }}'
+APK_DEV_PACKAGES='{{ range .packages.linux.repo.apk.dev }}{{ . }} {{ end }}'
+APK_AI_PACKAGES='{{ range .packages.linux.repo.apk.ai }}{{ . }} {{ end }}'
+DEV_INSTALLERS='{{ range .packages.linux.install.dev }}{{ . }} {{ end }}'
+AI_INSTALLERS='{{ range .packages.linux.install.ai }}{{ . }} {{ end }}'
+
+echo "[chezmoi] Installing packages for Linux..."
+
+# Determine if we need sudo
+if [ "$(id -u)" -eq 0 ]; then
+    SUDO=""
+else
+    SUDO="sudo"
+fi
+
+fetch_url() {
+    if command -v curl > /dev/null 2>&1; then
+        curl -fsSL "$1"
+    else
+        wget -qO- "$1"
+    fi
+}
+
+repo_packages_for_profile() {
+    server_packages="$1"
+    dev_packages="$2"
+    ai_packages="$3"
+
+    case "$PROFILE" in
+        server)
+            printf '%s\n' "$server_packages"
+            ;;
+        dev)
+            printf '%s %s\n' "$server_packages" "$dev_packages"
+            ;;
+        ai)
+            printf '%s %s\n' "$server_packages" "$ai_packages"
+            ;;
+        *)
+            echo "[chezmoi] Unsupported Linux profile: $PROFILE"
+            exit 1
+            ;;
+    esac
+}
+
+installer_targets_for_profile() {
+    case "$PROFILE" in
+        dev)
+            printf '%s\n' "$DEV_INSTALLERS"
+            ;;
+        ai)
+            printf '%s\n' "$AI_INSTALLERS"
+            ;;
+        *)
+            printf '\n'
+            ;;
+    esac
+}
+
+install_apt_packages() {
+    packages="$1"
+    available=""
+    skipped=""
+
+    $SUDO apt-get update
+
+    for pkg in $packages; do
+        if apt-cache show "$pkg" > /dev/null 2>&1; then
+            available="$available $pkg"
+        else
+            skipped="$skipped $pkg"
+        fi
+    done
+
+    if [ -n "$available" ]; then
+        # shellcheck disable=SC2086
+        $SUDO apt-get install -y $available
+    fi
+
+    if [ -n "$skipped" ]; then
+        echo "[chezmoi] Skipping unavailable apt packages:$skipped"
+    fi
+}
+
+install_apk_packages() {
+    packages="$1"
+    available=""
+    skipped=""
+
+    for pkg in $packages; do
+        if apk search -qe "$pkg" > /dev/null 2>&1; then
+            available="$available $pkg"
+        else
+            skipped="$skipped $pkg"
+        fi
+    done
+
+    if [ -n "$available" ]; then
+        # shellcheck disable=SC2086
+        apk add --no-cache $available
+    fi
+
+    if [ -n "$skipped" ]; then
+        echo "[chezmoi] Skipping unavailable apk packages:$skipped"
+    fi
+}
+
+install_uv() {
+    if command -v uv > /dev/null 2>&1; then
+        return
+    fi
+
+    echo "[chezmoi] Installing uv..."
+    fetch_url "https://astral.sh/uv/install.sh" | sh
+}
+
+install_bun() {
+    if command -v bun > /dev/null 2>&1; then
+        return
+    fi
+
+    echo "[chezmoi] Installing bun..."
+    fetch_url "https://bun.sh/install" | bash
+}
+
+install_opencode() {
+    if command -v opencode > /dev/null 2>&1; then
+        return
+    fi
+
+    echo "[chezmoi] Installing OpenCode..."
+    fetch_url "https://opencode.ai/install" | bash
+}
+
+install_zellij() {
+    if command -v zellij > /dev/null 2>&1; then
+        return
+    fi
+
+    echo "[chezmoi] Installing Zellij ${ZELLIJ_VERSION} to ~/.local/bin..."
+
+    case "$(uname -m)" in
+        x86_64|amd64) ZELLIJ_ARCH="x86_64-unknown-linux-musl" ;;
+        aarch64|arm64) ZELLIJ_ARCH="aarch64-unknown-linux-musl" ;;
+        *)
+            echo "[chezmoi] Unsupported architecture for Zellij binary: $(uname -m)"
+            exit 0
+            ;;
+    esac
+
+    mkdir -p "$HOME/.local/bin"
+    TMPDIR="$(mktemp -d)"
+    trap 'rm -rf "$TMPDIR"' EXIT HUP INT TERM
+
+    URL="https://github.com/zellij-org/zellij/releases/download/v${ZELLIJ_VERSION}/zellij-${ZELLIJ_ARCH}.tar.gz"
+    if command -v curl > /dev/null 2>&1; then
+        curl -fsSL "$URL" -o "$TMPDIR/zellij.tar.gz"
+    else
+        wget -qO "$TMPDIR/zellij.tar.gz" "$URL"
+    fi
+
+    tar -xzf "$TMPDIR/zellij.tar.gz" -C "$TMPDIR"
+    install -m 0755 "$TMPDIR/zellij" "$HOME/.local/bin/zellij"
+}
+
+run_profile_installers() {
+    for installer in $(installer_targets_for_profile); do
+        case "$installer" in
+            uv)
+                install_uv
+                ;;
+            bun)
+                install_bun
+                ;;
+            opencode)
+                install_opencode
+                ;;
+            zellij)
+                install_zellij
+                ;;
+        esac
+    done
+}
+
+if command -v apk > /dev/null 2>&1; then
+    echo "[chezmoi] Detected Alpine (apk)"
+    install_apk_packages "$(repo_packages_for_profile "$APK_SERVER_PACKAGES" "$APK_DEV_PACKAGES" "$APK_AI_PACKAGES")"
+elif command -v apt-get > /dev/null 2>&1; then
+    echo "[chezmoi] Detected Debian/Ubuntu (apt)"
+    install_apt_packages "$(repo_packages_for_profile "$APT_SERVER_PACKAGES" "$APT_DEV_PACKAGES" "$APT_AI_PACKAGES")"
+else
+    echo "[chezmoi] No supported Linux package manager found"
+    exit 1
+fi
+
+run_profile_installers
+
+echo "[chezmoi] Linux package installation complete"
+{{- end -}}

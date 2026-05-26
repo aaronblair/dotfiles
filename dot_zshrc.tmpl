@@ -1,3 +1,23 @@
+{{- $profile := get . "profile" -}}
+{{- if eq $profile "" -}}
+{{- $profile = env "CHEZMOI_PROFILE" -}}
+{{- if eq $profile "" -}}
+{{- if eq .chezmoi.os "darwin" -}}
+{{- $profile = "macos" -}}
+{{- else if eq .chezmoi.os "linux" -}}
+{{- $profile = "server" -}}
+{{- else -}}
+{{- $profile = .chezmoi.os -}}
+{{- end -}}
+{{- end -}}
+{{- end -}}
+{{- $isMacos := eq $profile "macos" -}}
+{{- $isDev := eq $profile "dev" -}}
+{{- $isAi := eq $profile "ai" -}}
+{{- $managesOpencode := or $isMacos $isDev $isAi -}}
+{{- $installsZellij := or $isMacos $isDev $isAi -}}
+{{- $targetHome := .chezmoi.destDir -}}
+
 # -----------------
 # p10k instant prompt
 # -----------------
@@ -16,9 +36,12 @@ fi
 
 # TMUX Shortcut
 alias tm='tmux attach-session -t default || tmux new -t default'
+{{- if $managesOpencode }}
 alias oc='opencode'
 alias occ='opencode --continue'
+{{- end }}
 
+{{- if $managesOpencode }}
 ocu() {
   if ! command -v opencode > /dev/null 2>&1; then
     print 'opencode is not installed'
@@ -38,13 +61,16 @@ ocu() {
   print 'Updating opencode via opencode upgrade...'
   opencode upgrade
 }
+{{- end }}
 
 # Zellij shortcuts
+{{- if $installsZellij }}
 if type zellij > /dev/null 2>&1; then
   alias zj='zellij attach -c main'
   alias zja='zellij attach'
   alias zjl='zellij list-sessions'
 fi
+{{- end }}
 
 # Set the default editor with nvim > vim > vi fallback
 if type nvim > /dev/null 2>&1; then
@@ -66,26 +92,31 @@ if type eza > /dev/null 2>&1; then
   alias ls='eza --group-directories-first --icons'
 fi
 
+# Debian and Ubuntu package the fd binary as fdfind.
+if ! type fd > /dev/null 2>&1 && type fdfind > /dev/null 2>&1; then
+  alias fd='fdfind'
+fi
+
 # Claude Code
 export PATH="$HOME/.local/bin:$PATH"
 export HOMEBREW_NO_ENV_HINTS=1
 typeset -U path PATH
 
-{{- if eq .chezmoi.os "darwin" }}
+{{- if $isMacos }}
 # NVM setup (sourced after zim init to avoid compinit conflict)
-export NVM_DIR="{{ .chezmoi.homeDir }}/.nvm"
+export NVM_DIR="{{ $targetHome }}/.nvm"
 
 # Required for Android Studio / Expo / React Native
 export JAVA_HOME=/Library/Java/JavaVirtualMachines/zulu-17.jdk/Contents/Home
-export ANDROID_HOME={{ .chezmoi.homeDir }}/Library/Android/sdk
+export ANDROID_HOME={{ $targetHome }}/Library/Android/sdk
 export PATH=$PATH:$ANDROID_HOME/emulator
 export PATH=$PATH:$ANDROID_HOME/platform-tools
 
 # Antigravity
-export PATH="{{ .chezmoi.homeDir }}/.antigravity/antigravity/bin:$PATH"
+export PATH="{{ $targetHome }}/.antigravity/antigravity/bin:$PATH"
 
 # Bun
-export BUN_INSTALL="{{ .chezmoi.homeDir }}/.bun"
+export BUN_INSTALL="{{ $targetHome }}/.bun"
 export PATH="$BUN_INSTALL/bin:$PATH"
 {{- end }}
 
@@ -230,12 +261,12 @@ unset key
 # ------------------------------
 # These must be sourced AFTER zim init to avoid compinit conflicts
 
-{{- if eq .chezmoi.os "darwin" }}
+{{- if $isMacos }}
 # NVM (Homebrew)
 [[ -n "${HOMEBREW_PREFIX:-}" ]] && [ -s "${HOMEBREW_PREFIX}/opt/nvm/nvm.sh" ] && \. "${HOMEBREW_PREFIX}/opt/nvm/nvm.sh"
 
 # Bun completions
-[ -s "{{ .chezmoi.homeDir }}/.bun/_bun" ] && source "{{ .chezmoi.homeDir }}/.bun/_bun"
+[ -s "{{ $targetHome }}/.bun/_bun" ] && source "{{ $targetHome }}/.bun/_bun"
 
 # VSCode shell integration (must be after zim init)
 # https://github.com/saoudrizwan/shell-integration-problems

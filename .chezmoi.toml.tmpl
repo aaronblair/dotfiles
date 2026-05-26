@@ -1,9 +1,48 @@
-{{- /* Use env var, then existing config, then default */ -}}
+{{- /* Use env vars from infra when provided, then existing config, then defaults. */ -}}
+{{- $profile := env "CHEZMOI_PROFILE" -}}
+{{- if eq $profile "" -}}
+{{- if eq .chezmoi.os "darwin" -}}
+{{- $profile = "macos" -}}
+{{- else if eq .chezmoi.os "linux" -}}
+{{- $profile = "server" -}}
+{{- else -}}
+{{- $profile = .chezmoi.os -}}
+{{- end -}}
+{{- end -}}
+{{- $isMacos := eq $profile "macos" -}}
+{{- $isServer := eq $profile "server" -}}
+{{- $isDev := eq $profile "dev" -}}
+{{- $isAi := eq $profile "ai" -}}
+{{- $isLinux := or $isServer $isDev $isAi -}}
+{{- $profileValid := or $isMacos $isServer $isDev $isAi -}}
+{{- $profileError := "" -}}
+{{- if not $profileValid -}}
+{{- $profileError = printf "invalid CHEZMOI_PROFILE %q" $profile -}}
+{{- end -}}
+{{- $hasDisplay := $isMacos -}}
+{{- $hasDisplayEnv := env "CHEZMOI_HAS_DISPLAY" -}}
+{{- if or (eq $hasDisplayEnv "1") (eq $hasDisplayEnv "true") -}}
+{{- $hasDisplay = true -}}
+{{- else if or (eq $hasDisplayEnv "0") (eq $hasDisplayEnv "false") -}}
+{{- $hasDisplay = false -}}
+{{- end -}}
 {{- $email := coalesce (env "CHEZMOI_EMAIL") (get . "email") "dev@example.com" -}}
 {{- $fullname := coalesce (env "CHEZMOI_NAME") (get . "fullname") "Aaron Blair" -}}
-{{- $headless := not (env "DISPLAY") -}}
 
 [data]
+    profile = {{ $profile | quote }}
+    profile_valid = {{ $profileValid }}
+    profile_error = {{ $profileError | quote }}
     fullname = {{ $fullname | quote }}
     email = {{ $email | quote }}
-    headless = {{ $headless }}
+    is_macos = {{ $isMacos }}
+    is_linux = {{ $isLinux }}
+    has_display = {{ $hasDisplay }}
+    is_server = {{ $isServer }}
+    is_dev = {{ $isDev }}
+    is_ai = {{ $isAi }}
+    manages_personal_ssh = {{ or $isMacos $isDev }}
+    manages_gh = {{ or $isMacos $isDev }}
+    manages_opencode = {{ or $isMacos $isDev $isAi }}
+    bootstraps_nvim = {{ or $isMacos $isDev $isAi }}
+    installs_zellij = {{ or $isMacos $isDev $isAi }}

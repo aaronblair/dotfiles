@@ -8,7 +8,7 @@
       "headers": {
         "CONTEXT7_API_KEY": "{env:CONTEXT7_API_KEY}"
       },
-      "enabled": true
+      "enabled": {{ if env "CONTEXT7_API_KEY" }}true{{ else }}false{{ end }}
     }
   }
 }

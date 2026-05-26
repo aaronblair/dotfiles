@@ -1,4 +1,17 @@
+{{- $profile := get . "profile" -}}
+{{- if eq $profile "" -}}
+{{- $profile = env "CHEZMOI_PROFILE" -}}
+{{- if eq $profile "" -}}
 {{- if eq .chezmoi.os "darwin" -}}
+{{- $profile = "macos" -}}
+{{- else if eq .chezmoi.os "linux" -}}
+{{- $profile = "server" -}}
+{{- else -}}
+{{- $profile = .chezmoi.os -}}
+{{- end -}}
+{{- end -}}
+{{- end -}}
+{{- if eq $profile "macos" -}}
 #!/bin/bash
 
 brew analytics off

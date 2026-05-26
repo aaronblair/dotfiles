@@ -1,0 +1,76 @@
+packages:
+  linux:
+    repo:
+      apt:
+        server:
+          - ca-certificates
+          - curl
+          - eza
+          - fd-find
+          - fzf
+          - git
+          - htop
+          - jq
+          - less
+          - neovim
+          - openssh-client
+          - ripgrep
+          - rsync
+          - tmux
+          - unzip
+          - zoxide
+          - zsh
+        dev:
+          - gh
+          - git-delta
+          - lazygit
+          - tree
+          - wget
+        ai:
+          - gh
+          - git-delta
+          - lazygit
+          - tree
+          - wget
+      apk:
+        server:
+          - ca-certificates
+          - curl
+          - eza
+          - fd
+          - fzf
+          - git
+          - htop
+          - jq
+          - less
+          - neovim
+          - openssh-client-default
+          - ripgrep
+          - rsync
+          - tmux
+          - unzip
+          - zoxide
+          - zsh
+        dev:
+          - gh
+          - delta
+          - lazygit
+          - tree
+          - wget
+        ai:
+          - gh
+          - delta
+          - lazygit
+          - tree
+          - wget
+    install:
+      dev:
+        - uv
+        - bun
+        - opencode
+        - zellij
+      ai:
+        - uv
+        - bun
+        - opencode
+        - zellij

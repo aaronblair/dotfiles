@@ -12,23 +12,24 @@ This is a Chezmoi source repo for macOS and Linux dotfiles. Edit source files he
 
 ## Source Naming
 
-- Chezmoi prefixes are in use: `dot_` maps to a leading `.`, `private_` marks private targets, and `run_once_*` scripts execute once during apply.
+- Chezmoi prefixes are in use: `dot_` maps to a leading `.`, `private_` marks private targets, `run_once_*` scripts execute once, and `run_onchange_*` scripts rerun when their rendered contents change.
 - Key templates are `.chezmoi.toml.tmpl`, `dot_zshrc.tmpl`, `dot_zprofile.tmpl`, and `dot_gitconfig.tmpl`.
 - `private_dot_ssh/config` is managed source for `~/.ssh/config`; treat SSH changes as sensitive even though this file currently has no secrets.
 
 ## Platform Behavior
 
-- `.chezmoi.toml.tmpl` sets `.fullname`, `.email`, and `.headless`; `CHEZMOI_NAME` and `CHEZMOI_EMAIL` override defaults.
-- `.chezmoiignore` excludes Darwin-only targets on Linux and excludes `dot_wezterm.lua` when `DISPLAY` is unset.
-- macOS package setup is in `run_once_before_2-install-packages-darwin.sh.tmpl` using inline `brew bundle`; Linux setup is in `run_once_before_1-install-packages-linux.sh.tmpl` using `apk` or `apt-get`.
-- Darwin-only shell paths in `dot_zshrc.tmpl` include Homebrew NVM, Java 17, Android SDK, Antigravity, and Bun; keep Linux-safe shell edits outside Darwin template blocks.
-- External Powerlevel10k Meslo fonts are declared only for Darwin in `.chezmoiexternal.toml.tmpl`.
+- `.chezmoi.toml.tmpl` sets explicit profile-driven data including `profile`, `is_macos`, `is_linux`, `has_display`, `is_server`, `is_dev`, and `is_ai`; `CHEZMOI_PROFILE`, `CHEZMOI_NAME`, and `CHEZMOI_EMAIL` drive the rendered config.
+- `.chezmoiignore` is profile-aware and matches target paths, not source paths.
+- macOS package setup is in `run_once_before_2-install-packages-darwin.sh.tmpl` using inline `brew bundle`; Linux setup is in `run_onchange_before_1-install-packages-linux.sh.tmpl` using `.chezmoidata/packages.yaml` plus `apt-get` or `apk`.
+- Darwin-only shell paths in `dot_zshrc.tmpl` include Homebrew NVM, Java 17, Android SDK, Antigravity, and Bun; they apply only to the `macos` profile.
+- External Powerlevel10k Meslo fonts are declared only for the `macos` profile in `.chezmoiexternal.toml.tmpl`.
+- `.chezmoiremove.tmpl` removes trust-sensitive files when a profile no longer manages them.
 
 ## App Configs
 
 - Neovim is a LazyVim config under `dot_config/nvim`; plugin overrides live in `dot_config/nvim/lua/plugins/`.
 - Lua formatting convention for Neovim is in `dot_config/nvim/stylua.toml`: 2-space indents and 120 columns.
-- `run_once_after_4-setup-nvim.sh.tmpl` runs headless Lazy sync and Tree-sitter installs, ignoring failures so bootstrap can continue.
+- `run_once_after_4-setup-nvim.sh.tmpl` bootstraps Neovim only for `macos`, `dev`, and `ai`, ignoring failures so bootstrap can continue.
 
 ## Repo Constraints
 

@@ -14,49 +14,17 @@
 {{- $isMacos := eq $profile "macos" -}}
 {{- $isDev := eq $profile "dev" -}}
 {{- $isAi := eq $profile "ai" -}}
-{{- $hasDisplay := $isMacos -}}
-{{- $hasDisplayEnv := env "CHEZMOI_HAS_DISPLAY" -}}
-{{- if or (eq $hasDisplayEnv "1") (eq $hasDisplayEnv "true") -}}
-{{- $hasDisplay = true -}}
-{{- else if or (eq $hasDisplayEnv "0") (eq $hasDisplayEnv "false") -}}
-{{- $hasDisplay = false -}}
-{{- end -}}
 {{- $managesPersonalSSH := or $isMacos $isDev -}}
 {{- $managesGh := or $isMacos $isDev -}}
 {{- $managesOpencode := or $isMacos $isDev $isAi -}}
 
-README.md
-AGENTS.md
-prd.md
-.opencode/
-.gitignore
-Users/
-Users/**
-
-{{- if not $isMacos }}
-# Darwin-only (skip on Linux)
-Library/
-run_once_*darwin*
-{{- end }}
-
-{{- if not $hasDisplay }}
-# GUI apps not needed on non-display profiles.
-.wezterm.lua
-.config/ghostty
-.config/ghostty/**
-{{- end }}
-
 {{- if not $managesPersonalSSH }}
-.ssh
-.ssh/**
+.ssh/config
 {{- end }}
-
 {{- if not $managesGh }}
-.config/gh
-.config/gh/**
+.config/gh/config.yml
+.config/gh/hosts.yml
 {{- end }}
-
 {{- if not $managesOpencode }}
 .config/opencode
-.config/opencode/**
 {{- end }}

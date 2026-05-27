@@ -145,6 +145,57 @@ This is mainly used to clean up trust-sensitive state when moving away from `dev
 - not installed by default for `server`
 - shell shortcuts in `~/.zshrc`: `oc`, `occ`, `ocu`
 - Context7 MCP is enabled only when `CONTEXT7_API_KEY` is present
+- local secrets are loaded from `~/.config/env.d/*.zsh` on Linux profiles and denied to OpenCode tools by config
+- `bifrost_vkey dev` creates a new Bifrost virtual key by copying non-secret governance settings from the existing `openclaw-main` virtual key
+
+## Local Secrets
+
+Secret values are intentionally not managed by Chezmoi. Put machine-local exports in `~/.config/env.d/*.zsh`; these files are sourced by zsh on Linux profiles before interactive startup.
+
+Example local file:
+
+```zsh
+export CONTEXT7_API_KEY="..."
+export BIFROST_BASE_URL="https://bifrost.example"
+export BIFROST_ADMIN_TOKEN="..."
+```
+
+OpenCode is configured to deny read/edit/glob/grep/list access to `~/.config/env.d/**`. Do not commit those files or paste their contents into agent sessions.
+
+### Bifrost Virtual Keys
+
+The `bifrost_vkey` zsh helper lives at `~/.config/zsh/functions/bifrost-vkey.zsh` and is sourced from `~/.zshrc`.
+
+Required local env:
+
+```zsh
+export BIFROST_BASE_URL="https://bifrost.example"
+export BIFROST_ADMIN_TOKEN="..."
+```
+
+Default dev usage:
+
+```zsh
+bifrost_vkey dev
+```
+
+For the `dev` profile, the helper defaults to `--from openclaw-main`. It copies `provider_configs`, team/customer association, budget, rate limit, and key restrictions from that source key, then stores only the new virtual key value in `~/.config/env.d/opencode-bifrost.zsh`.
+
+Useful variants:
+
+```zsh
+bifrost_vkey dev --dry-run
+bifrost_vkey dev --from another-source-key
+bifrost_vkey ai --from openclaw-main
+```
+
+Manual mode requires explicit provider configs and key IDs:
+
+```zsh
+export BIFROST_PROVIDER_CONFIGS_JSON_DEV='[{"provider":"openai","weight":1,"allowed_models":["gpt-4o-mini"]}]'
+export BIFROST_KEY_IDS_JSON_DEV='["provider-key-id"]'
+bifrost_vkey dev --no-source
+```
 
 ## Existing Machines
 

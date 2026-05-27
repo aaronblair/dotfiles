@@ -1,6 +1,32 @@
 {
   "$schema": "https://opencode.ai/config.json",
   "plugin": [],
+  "permission": {
+    "read": {
+      "~/.config/env.d": "deny",
+      "~/.config/env.d/**": "deny"
+    },
+    "edit": {
+      "~/.config/env.d": "deny",
+      "~/.config/env.d/**": "deny"
+    },
+    "glob": {
+      "~/.config/env.d": "deny",
+      "~/.config/env.d/**": "deny"
+    },
+    "grep": {
+      "~/.config/env.d": "deny",
+      "~/.config/env.d/**": "deny"
+    },
+    "list": {
+      "~/.config/env.d": "deny",
+      "~/.config/env.d/**": "deny"
+    },
+    "external_directory": {
+      "~/.config/env.d": "deny",
+      "~/.config/env.d/**": "deny"
+    }
+  },
   "mcp": {
     "context7": {
       "type": "remote",

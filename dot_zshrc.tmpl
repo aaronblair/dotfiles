@@ -43,6 +43,10 @@ typeset -U path PATH
 {{- end }}
 export HOMEBREW_NO_ENV_HINTS=1
 
+if [[ -r "$HOME/.config/zsh/functions/bifrost-vkey.zsh" ]]; then
+  source "$HOME/.config/zsh/functions/bifrost-vkey.zsh"
+fi
+
 # TMUX Shortcut
 alias tm='tmux attach-session -t default || tmux new -t default'
 {{- if $managesOpencode }}

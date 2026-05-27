@@ -25,6 +25,15 @@ if [[ -n "${TERM:-}" && "${TERM:-}" != dumb && "${TERM:-}" != linux ]] \
   export TERM=xterm-256color
 fi
 
+local_env_dir="${XDG_CONFIG_HOME:-$HOME/.config}/env.d"
+if [[ -d "$local_env_dir" ]]; then
+  for local_env_file in "$local_env_dir"/*.zsh(N); do
+    source "$local_env_file"
+  done
+  unset local_env_file
+fi
+unset local_env_dir
+
 path=("$HOME/.local/bin" $path)
 {{- if or $isDev $isAi }}
 export BUN_INSTALL="$HOME/.bun"

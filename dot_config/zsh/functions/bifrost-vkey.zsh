@@ -11,15 +11,35 @@ _profile_env_value() {
   print -r -- "$value"
 }
 
+_bifrost_login_token() {
+  local base_url="$1"
+  local username="$2"
+  local password="$3"
+  local payload
+  local response
+
+  payload="$(jq -n \
+    --arg username "$username" \
+    --arg password "$password" \
+    '{username: $username, password: $password}')"
+
+  response="$(curl -fsSL -X POST "${base_url%/}/api/session/login" \
+    -H 'Content-Type: application/json' \
+    -d "$payload")" || return 1
+
+  jq -r '.token // empty' <<<"$response"
+}
+
 _bifrost_virtual_key_by_name() {
   local base_url="$1"
-  local admin_header="$2"
-  local auth_value="$3"
-  local source_name="$4"
+  local source_name="$2"
+  shift 2
+  local -a auth_args
+  auth_args=("$@")
   local response
 
   response="$(curl -fsSL "${base_url%/}/api/governance/virtual-keys" \
-    -H "$admin_header: $auth_value")" || return 1
+    "${auth_args[@]}")" || return 1
 
   jq -e --arg source_name "$source_name" '
     def virtual_keys:
@@ -27,33 +47,61 @@ _bifrost_virtual_key_by_name() {
       else (.virtual_keys // .data // .items // [])
       end;
 
+    def clean_budget:
+      {
+        max_limit,
+        reset_duration,
+        calendar_aligned
+      } | with_entries(select(.value != null));
+
+    def clean_rate_limit:
+      {
+        token_max_limit,
+        token_reset_duration,
+        request_max_limit,
+        request_reset_duration
+      } | with_entries(select(.value != null));
+
+    def direct_budgets:
+      if (.budgets // null) != null then .budgets
+      elif (.budget // null) != null then [.budget]
+      else []
+      end;
+
+    def key_ids_from_keys:
+      [(.keys // [])[] | .key_id | select(. != null and . != "null")];
+
+    def clean_provider_config:
+      {
+        provider,
+        weight,
+        allowed_models: (.allowed_models // []),
+        blacklisted_models: (.blacklisted_models // [])
+      }
+      + (if (direct_budgets | length) > 0 then {budgets: [direct_budgets[] | clean_budget]} else {} end)
+      + (if .rate_limit == null or ((.rate_limit | clean_rate_limit) == {}) then {} else {rate_limit: (.rate_limit | clean_rate_limit)} end)
+      + (if ((.key_ids // []) | length) > 0 then {key_ids: .key_ids}
+         elif (key_ids_from_keys | length) > 0 then {key_ids: key_ids_from_keys}
+         elif .allow_all_keys == true then {key_ids: ["*"]}
+         else {}
+         end);
+
+    def clean_mcp_config:
+      {
+        mcp_client_name: (.mcp_client_name // .mcp_client.name),
+        tools_to_execute: (.tools_to_execute // [])
+      } | with_entries(select(.value != null));
+
     virtual_keys[]
     | select(.name == $source_name)
     | {
-        provider_configs,
+        provider_configs: [(.provider_configs // [])[] | clean_provider_config],
+        mcp_configs: (if ((.mcp_configs // []) | length) == 0 then null else [(.mcp_configs // [])[] | clean_mcp_config] end),
         team_id,
         customer_id,
-        budget: (
-          .budget
-          | if . == null then null
-            else {
-              max_limit,
-              reset_duration
-            } | with_entries(select(.value != null))
-            end
-        ),
-        rate_limit: (
-          .rate_limit
-          | if . == null then null
-            else {
-              token_max_limit,
-              token_reset_duration,
-              request_max_limit,
-              request_reset_duration
-            } | with_entries(select(.value != null))
-            end
-        ),
-        key_ids
+        budgets: (if (direct_budgets | length) == 0 then null else [direct_budgets[] | clean_budget] end),
+        rate_limit: (if .rate_limit == null or ((.rate_limit | clean_rate_limit) == {}) then null else (.rate_limit | clean_rate_limit) end),
+        calendar_aligned
       }
   ' <<<"$response"
 }
@@ -87,9 +135,10 @@ bifrost_vkey() {
         ;;
       -h|--help)
         print 'usage: bifrost_vkey [dev|ai|server|macos] [--from NAME|--no-source] [--dry-run]'
-        print 'requires: BIFROST_BASE_URL and BIFROST_ADMIN_TOKEN'
+        print 'requires: BIFROST_BASE_URL'
+        print 'auth: none by default; or BIFROST_AUTH_TOKEN, BIFROST_API_KEY, BIFROST_USERNAME/BIFROST_PASSWORD, or BIFROST_AUTH_HEADER/BIFROST_AUTH_VALUE'
         print 'dev default: copy non-secret governance config from virtual key named openclaw-main'
-        print 'manual mode: set BIFROST_PROVIDER_CONFIGS_JSON[_PROFILE] and BIFROST_KEY_IDS_JSON[_PROFILE]'
+        print 'manual mode: set BIFROST_PROVIDER_CONFIGS_JSON[_PROFILE] with provider_configs[].key_ids, or set BIFROST_KEY_IDS_JSON[_PROFILE]'
         print 'optional: BIFROST_TEAM_ID[_PROFILE], BIFROST_CUSTOMER_ID[_PROFILE], budget/rate-limit env vars'
         return 0
         ;;
@@ -107,14 +156,21 @@ bifrost_vkey() {
   fi
 
   local base_url="${BIFROST_BASE_URL:-}"
-  local admin_token="${BIFROST_ADMIN_TOKEN:-}"
-  local admin_header="${BIFROST_ADMIN_HEADER:-Authorization}"
+  local auth_token="$(_profile_env_value BIFROST_AUTH_TOKEN "$profile")"
+  local session_token="$(_profile_env_value BIFROST_SESSION_TOKEN "$profile")"
+  local api_key="$(_profile_env_value BIFROST_API_KEY "$profile")"
+  local auth_header="$(_profile_env_value BIFROST_AUTH_HEADER "$profile")"
+  local auth_value="$(_profile_env_value BIFROST_AUTH_VALUE "$profile")"
+  local auth_username="$(_profile_env_value BIFROST_USERNAME "$profile")"
+  local auth_password="$(_profile_env_value BIFROST_PASSWORD "$profile")"
   local provider_configs_json="$(_profile_env_value BIFROST_PROVIDER_CONFIGS_JSON "$profile")"
+  local mcp_configs_json="$(_profile_env_value BIFROST_MCP_CONFIGS_JSON "$profile")"
   local team_id="$(_profile_env_value BIFROST_TEAM_ID "$profile")"
   local customer_id="$(_profile_env_value BIFROST_CUSTOMER_ID "$profile")"
   local key_ids_json="$(_profile_env_value BIFROST_KEY_IDS_JSON "$profile")"
-  local source_budget_json=""
+  local source_budgets_json=""
   local source_rate_limit_json=""
+  local source_calendar_aligned=""
   local budget_max_limit="$(_profile_env_value BIFROST_BUDGET_MAX_LIMIT "$profile")"
   local budget_reset_duration="$(_profile_env_value BIFROST_BUDGET_RESET_DURATION "$profile")"
   local token_max_limit="$(_profile_env_value BIFROST_TOKEN_MAX_LIMIT "$profile")"
@@ -122,9 +178,42 @@ bifrost_vkey() {
   local request_max_limit="$(_profile_env_value BIFROST_REQUEST_MAX_LIMIT "$profile")"
   local request_reset_duration="$(_profile_env_value BIFROST_REQUEST_RESET_DURATION "$profile")"
 
-  if [[ -z "$base_url" || -z "$admin_token" ]]; then
-    print -u2 -- 'bifrost_vkey: BIFROST_BASE_URL and BIFROST_ADMIN_TOKEN must be set'
+  if [[ -z "$auth_token" ]]; then
+    auth_token="$session_token"
+  fi
+
+  if [[ -z "$auth_username" ]]; then
+    auth_username="$(_profile_env_value BIFROST_ADMIN_USERNAME "$profile")"
+  fi
+  if [[ -z "$auth_password" ]]; then
+    auth_password="$(_profile_env_value BIFROST_ADMIN_PASSWORD "$profile")"
+  fi
+
+  if [[ -z "$base_url" ]]; then
+    print -u2 -- 'bifrost_vkey: BIFROST_BASE_URL must be set'
     return 1
+  fi
+
+  local -a auth_args
+  local auth_needs_login=0
+  if [[ -n "$auth_header" || -n "$auth_value" ]]; then
+    if [[ -z "$auth_header" || -z "$auth_value" ]]; then
+      print -u2 -- 'bifrost_vkey: BIFROST_AUTH_HEADER and BIFROST_AUTH_VALUE must be set together'
+      return 1
+    fi
+    auth_args=(-H "$auth_header: $auth_value")
+  elif [[ -n "$auth_token" ]]; then
+    auth_args=(-H "Authorization: Bearer $auth_token")
+  elif [[ -n "$api_key" ]]; then
+    auth_args=(-H "x-api-key: $api_key")
+  elif [[ -n "$auth_username" || -n "$auth_password" ]]; then
+    if [[ -z "$auth_username" || -z "$auth_password" ]]; then
+      print -u2 -- 'bifrost_vkey: BIFROST_USERNAME and BIFROST_PASSWORD must be set together'
+      return 1
+    fi
+    auth_needs_login=1
+  else
+    auth_args=()
   fi
 
   if [[ "$source_vkey_name" == "__none__" ]]; then
@@ -136,14 +225,22 @@ bifrost_vkey() {
     fi
   fi
 
-  local auth_value="$admin_token"
-  if [[ "$admin_header" == Authorization ]]; then
-    auth_value="Bearer $admin_token"
-  fi
-
   if [[ -n "$source_vkey_name" ]]; then
     local source_config
-    source_config="$(_bifrost_virtual_key_by_name "$base_url" "$admin_header" "$auth_value" "$source_vkey_name")" || {
+    if (( auth_needs_login )); then
+      auth_token="$(_bifrost_login_token "$base_url" "$auth_username" "$auth_password")" || {
+        print -u2 -- 'bifrost_vkey: Bifrost login failed'
+        return 1
+      }
+      if [[ -z "$auth_token" ]]; then
+        print -u2 -- 'bifrost_vkey: Bifrost login response did not include a token'
+        return 1
+      fi
+      auth_args=(-H "Authorization: Bearer $auth_token")
+      auth_needs_login=0
+    fi
+
+    source_config="$(_bifrost_virtual_key_by_name "$base_url" "$source_vkey_name" "${auth_args[@]}")" || {
       print -u2 -- "bifrost_vkey: could not find source virtual key: $source_vkey_name"
       return 1
     }
@@ -157,11 +254,12 @@ bifrost_vkey() {
     if [[ -z "$customer_id" ]]; then
       customer_id="$(jq -r '.customer_id // empty' <<<"$source_config")"
     fi
-    if [[ -z "$key_ids_json" ]]; then
-      key_ids_json="$(jq -c 'if .key_ids == null then empty else .key_ids end' <<<"$source_config")"
+    if [[ -z "$mcp_configs_json" ]]; then
+      mcp_configs_json="$(jq -c 'if .mcp_configs == null or .mcp_configs == [] then empty else .mcp_configs end' <<<"$source_config")"
     fi
-    source_budget_json="$(jq -c 'if .budget == null or .budget == {} then empty else .budget end' <<<"$source_config")"
+    source_budgets_json="$(jq -c 'if .budgets == null or .budgets == [] then empty else .budgets end' <<<"$source_config")"
     source_rate_limit_json="$(jq -c 'if .rate_limit == null or .rate_limit == {} then empty else .rate_limit end' <<<"$source_config")"
+    source_calendar_aligned="$(jq -r 'if .calendar_aligned == null then empty else .calendar_aligned end' <<<"$source_config")"
   fi
 
   if [[ -z "$provider_configs_json" ]]; then
@@ -174,8 +272,13 @@ bifrost_vkey() {
     return 1
   fi
 
-  if ! jq -e 'type == "array"' > /dev/null 2>&1 <<<"$provider_configs_json"; then
-    print -u2 -- 'bifrost_vkey: provider configs must be a valid JSON array'
+  if ! jq -e 'type == "array" and length > 0' > /dev/null 2>&1 <<<"$provider_configs_json"; then
+    print -u2 -- 'bifrost_vkey: provider configs must be a non-empty JSON array'
+    return 1
+  fi
+
+  if [[ -n "$mcp_configs_json" ]] && ! jq -e 'type == "array"' > /dev/null 2>&1 <<<"$mcp_configs_json"; then
+    print -u2 -- 'bifrost_vkey: MCP configs must be a valid JSON array'
     return 1
   fi
 
@@ -184,8 +287,13 @@ bifrost_vkey() {
     return 1
   fi
 
-  if [[ -z "$key_ids_json" ]] && ! jq -e 'any(.[]; has("key_ids"))' > /dev/null 2>&1 <<<"$provider_configs_json"; then
-    print -u2 -- 'bifrost_vkey: key ids are required unless copied from a source virtual key or embedded in provider configs'
+  if [[ -n "$key_ids_json" ]]; then
+    provider_configs_json="$(jq -c --argjson key_ids "$key_ids_json" \
+      'map(if ((.key_ids // []) | length) > 0 then . else . + {key_ids: $key_ids} end)' <<<"$provider_configs_json")"
+  fi
+
+  if ! jq -e 'all(.[]; ((.key_ids // []) | (type == "array" and length > 0)))' > /dev/null 2>&1 <<<"$provider_configs_json"; then
+    print -u2 -- 'bifrost_vkey: every provider config must include key_ids; set BIFROST_KEY_IDS_JSON[_PROFILE] or use a source key with key assignments'
     return 1
   fi
 
@@ -214,8 +322,8 @@ bifrost_vkey() {
     payload="$(jq --arg customer_id "$customer_id" '. + {customer_id: $customer_id}' <<<"$payload")"
   fi
 
-  if [[ -n "$key_ids_json" ]]; then
-    payload="$(jq --argjson key_ids "$key_ids_json" '. + {key_ids: $key_ids}' <<<"$payload")"
+  if [[ -n "$mcp_configs_json" ]]; then
+    payload="$(jq --argjson mcp_configs "$mcp_configs_json" '. + {mcp_configs: $mcp_configs}' <<<"$payload")"
   fi
 
   if [[ -n "$budget_max_limit" ]]; then
@@ -223,13 +331,13 @@ bifrost_vkey() {
       --arg budget_max_limit "$budget_max_limit" \
       --arg budget_reset_duration "${budget_reset_duration:-1M}" \
       '. + {
-        budget: {
+        budgets: [{
           max_limit: ($budget_max_limit | tonumber),
           reset_duration: $budget_reset_duration
-        }
+        }]
       }' <<<"$payload")"
-  elif [[ -n "$source_budget_json" ]]; then
-    payload="$(jq --argjson budget "$source_budget_json" '. + {budget: $budget}' <<<"$payload")"
+  elif [[ -n "$source_budgets_json" ]]; then
+    payload="$(jq --argjson budgets "$source_budgets_json" '. + {budgets: $budgets}' <<<"$payload")"
   fi
 
   if [[ -n "$token_max_limit" || -n "$request_max_limit" ]]; then
@@ -255,15 +363,31 @@ bifrost_vkey() {
     payload="$(jq --argjson rate_limit "$source_rate_limit_json" '. + {rate_limit: $rate_limit}' <<<"$payload")"
   fi
 
+  if [[ "$source_calendar_aligned" == true ]]; then
+    payload="$(jq '. + {calendar_aligned: true}' <<<"$payload")"
+  fi
+
   if (( dry_run )); then
     print -- "$payload"
     return 0
   fi
 
+  if (( auth_needs_login )); then
+    auth_token="$(_bifrost_login_token "$base_url" "$auth_username" "$auth_password")" || {
+      print -u2 -- 'bifrost_vkey: Bifrost login failed'
+      return 1
+    }
+    if [[ -z "$auth_token" ]]; then
+      print -u2 -- 'bifrost_vkey: Bifrost login response did not include a token'
+      return 1
+    fi
+    auth_args=(-H "Authorization: Bearer $auth_token")
+  fi
+
   local response
   response="$(curl -fsSL -X POST "${base_url%/}/api/governance/virtual-keys" \
     -H 'Content-Type: application/json' \
-    -H "$admin_header: $auth_value" \
+    "${auth_args[@]}" \
     -d "$payload")" || return 1
 
   local virtual_key="$(jq -r '.value // .virtual_key.value // .data.value // empty' <<<"$response")"

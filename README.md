@@ -157,7 +157,9 @@ Example local file:
 ```zsh
 export CONTEXT7_API_KEY="..."
 export BIFROST_BASE_URL="https://bifrost.example"
-export BIFROST_ADMIN_TOKEN="..."
+# Only needed when Bifrost dashboard auth is enabled:
+export BIFROST_USERNAME="..."
+export BIFROST_PASSWORD="..."
 ```
 
 OpenCode is configured to deny read/edit/glob/grep/list access to `~/.config/env.d/**`. Do not commit those files or paste their contents into agent sessions.
@@ -170,8 +172,9 @@ Required local env:
 
 ```zsh
 export BIFROST_BASE_URL="https://bifrost.example"
-export BIFROST_ADMIN_TOKEN="..."
 ```
+
+Authentication defaults to no auth, which matches Bifrost when dashboard auth is disabled. If dashboard auth is enabled, set `BIFROST_USERNAME` and `BIFROST_PASSWORD`; the helper logs in through `/api/session/login` and uses the returned session token. You can also set `BIFROST_AUTH_TOKEN`, `BIFROST_API_KEY`, or `BIFROST_AUTH_HEADER` plus `BIFROST_AUTH_VALUE` for custom deployments.
 
 Default dev usage:
 
@@ -179,7 +182,7 @@ Default dev usage:
 bifrost_vkey dev
 ```
 
-For the `dev` profile, the helper defaults to `--from openclaw-main`. It copies `provider_configs`, team/customer association, budget, rate limit, and key restrictions from that source key, then stores only the new virtual key value in `~/.config/env.d/opencode-bifrost.zsh`.
+For the `dev` profile, the helper defaults to `--from openclaw-main`. It copies provider configs, MCP configs, team/customer association, budgets, rate limits, and provider key restrictions from that source key, then stores only the new virtual key value in `~/.config/env.d/opencode-bifrost.zsh`.
 
 Useful variants:
 
@@ -192,10 +195,11 @@ bifrost_vkey ai --from openclaw-main
 Manual mode requires explicit provider configs and key IDs:
 
 ```zsh
-export BIFROST_PROVIDER_CONFIGS_JSON_DEV='[{"provider":"openai","weight":1,"allowed_models":["gpt-4o-mini"]}]'
-export BIFROST_KEY_IDS_JSON_DEV='["provider-key-id"]'
+export BIFROST_PROVIDER_CONFIGS_JSON_DEV='[{"provider":"openai","weight":1,"allowed_models":["gpt-4o-mini"],"key_ids":["provider-key-id"]}]'
 bifrost_vkey dev --no-source
 ```
+
+Alternatively, `BIFROST_KEY_IDS_JSON[_PROFILE]` applies the same provider key IDs to any provider config that does not already include `key_ids`.
 
 ## Existing Machines
 

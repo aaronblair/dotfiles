@@ -71,6 +71,10 @@ export const search = tool({
   },
   async execute(args) {
     const parts = [`kagi-ken-cli search ${escapeShellArg(args.query)}`]
+    const token = process.env.KAGI_SESSION_TOKEN
+    if (token) {
+      parts.push(`--token ${escapeShellArg(token)}`)
+    }
     if (args.limit && args.limit !== 10) {
       parts.push(`--limit ${args.limit}`)
     }
@@ -97,6 +101,7 @@ export const summarize = tool({
 
     const type = args.type ?? "summary"
     const language = args.language ?? "EN"
+    const token = process.env.KAGI_SESSION_TOKEN
 
     const parts = ["kagi-ken-cli summarize"]
 
@@ -108,6 +113,9 @@ export const summarize = tool({
 
     parts.push(`--type ${escapeShellArg(type)}`)
     parts.push(`--language ${escapeShellArg(language)}`)
+    if (token) {
+      parts.push(`--token ${escapeShellArg(token)}`)
+    }
 
     return run(parts.join(" "))
   },

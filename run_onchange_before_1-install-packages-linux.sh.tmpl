@@ -174,7 +174,7 @@ install_pnpm() {
         return
     fi
 
-    echo "[chezmoi] Installing pnpm ${PNPM_VERSION} to ~/.local/bin..."
+    echo "[chezmoi] Installing pnpm ${PNPM_VERSION} to ~/.local/share/pnpm-pkg..."
 
     case "$(uname -m)" in
         x86_64|amd64) PNPM_ARCH="x64" ;;
@@ -185,12 +185,14 @@ install_pnpm() {
             ;;
     esac
 
-    mkdir -p "$HOME/.local/bin"
+    PNPM_PKG_DIR="$HOME/.local/share/pnpm-pkg"
+    mkdir -p "$HOME/.local/bin" "$PNPM_PKG_DIR"
     PNPM_TMPDIR="$(mktemp -d)"
     trap 'rm -rf "$PNPM_TMPDIR"' EXIT HUP INT TERM
     fetch_url "https://github.com/pnpm/pnpm/releases/download/v${PNPM_VERSION}/pnpm-linux-${PNPM_ARCH}.tar.gz" > "$PNPM_TMPDIR/pnpm.tar.gz"
-    tar -xzf "$PNPM_TMPDIR/pnpm.tar.gz" -C "$PNPM_TMPDIR"
-    install -m 0755 "$PNPM_TMPDIR/pnpm" "$HOME/.local/bin/pnpm"
+    tar -xzf "$PNPM_TMPDIR/pnpm.tar.gz" -C "$PNPM_PKG_DIR"
+    chmod 0755 "$PNPM_PKG_DIR/pnpm"
+    ln -sf "$PNPM_PKG_DIR/pnpm" "$HOME/.local/bin/pnpm"
     rm -rf "$PNPM_TMPDIR"
     trap - EXIT HUP INT TERM
     hash -r 2> /dev/null || true

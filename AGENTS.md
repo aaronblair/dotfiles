@@ -1,5 +1,7 @@
 # Agent Notes
 
+This file is repo-local and ignored by Chezmoi; do not mirror it into managed dotfiles or expect it to apply on target machines.
+
 This is a Chezmoi source repo for macOS and Linux dotfiles. Edit source files here, not generated files in `$HOME`.
 
 ## Chezmoi Workflow

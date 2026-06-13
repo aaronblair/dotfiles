@@ -71,7 +71,6 @@
 - Flag common vulnerabilities: injection, XSS, SSRF, path traversal.
 - Prefer environment variables over hardcoded configuration values.
 - Treat `~/.config/env.d/**` as a local secret store. Do not read, grep, list, edit, summarize, or print files there unless the user explicitly asks and understands the risk.
-- Bifrost virtual-key bootstrap uses `bifrost_vkey`; for `dev`, it should copy non-secret governance settings from `openclaw-main` rather than hardcoding provider secrets.
 - Bifrost-backed OpenCode hosts should each use their own local virtual key and point directly at Bifrost; do not route `smed` through OpenClaw or OpenClaw through `smed`.
 
 ## Dependency Management

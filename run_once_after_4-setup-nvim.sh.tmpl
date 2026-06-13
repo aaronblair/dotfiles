@@ -1,26 +1,5 @@
-{{- $profile := get . "profile" -}}
-{{- if eq $profile "" -}}
-{{- $profile = env "CHEZMOI_PROFILE" -}}
-{{- if eq $profile "" -}}
-{{- if eq .chezmoi.os "darwin" -}}
-{{- $profile = "macos" -}}
-{{- else if eq .chezmoi.os "linux" -}}
-{{- $profile = "server" -}}
-{{- else -}}
-{{- $profile = .chezmoi.os -}}
-{{- end -}}
-{{- end -}}
-{{- end -}}
-{{- $isMacos := eq $profile "macos" -}}
-{{- $isServer := eq $profile "server" -}}
-{{- $isDev := eq $profile "dev" -}}
-{{- $isAi := eq $profile "ai" -}}
-{{- $profileValid := or $isMacos $isServer $isDev $isAi -}}
-{{- $profileError := "" -}}
-{{- if not $profileValid -}}
-{{- $profileError = printf "invalid CHEZMOI_PROFILE %q" $profile -}}
-{{- end -}}
-{{- if or $isMacos $isDev $isAi -}}
+{{- includeTemplate ".chezmoitemplates/profile-guard.tmpl" . -}}
+{{- if .bootstraps_nvim -}}
 #!/bin/sh
 set -e
 

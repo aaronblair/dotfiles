@@ -1,22 +1,6 @@
-{{- $profile := get . "profile" -}}
-{{- if eq $profile "" -}}
-{{- $profile = env "CHEZMOI_PROFILE" -}}
-{{- if eq $profile "" -}}
-{{- if eq .chezmoi.os "darwin" -}}
-{{- $profile = "macos" -}}
-{{- else if eq .chezmoi.os "linux" -}}
-{{- $profile = "server" -}}
-{{- else -}}
-{{- $profile = .chezmoi.os -}}
-{{- end -}}
-{{- end -}}
-{{- end -}}
-{{- $isMacos := eq $profile "macos" -}}
-{{- $isDev := eq $profile "dev" -}}
-{{- $isAi := eq $profile "ai" -}}
-{{- $installsZellij := or $isMacos $isDev $isAi -}}
+{{- includeTemplate ".chezmoitemplates/profile-guard.tmpl" . -}}
 
-{{- if $isMacos -}}
+{{- if .is_macos -}}
 ["Library/Fonts/MesloLGS NF Regular.ttf"]
     type = "file"
     url = "https://github.com/romkatv/powerlevel10k-media/raw/master/MesloLGS%20NF%20Regular.ttf"
@@ -35,7 +19,7 @@
     refreshPeriod = "672h"
 {{ end -}}
 
-{{- if $installsZellij -}}
+{{- if .installs_zellij -}}
 [".config/zellij/plugins/vim-zellij-navigator.wasm"]
     type = "file"
     url = "https://github.com/hiasr/vim-zellij-navigator/releases/download/0.2.1/vim-zellij-navigator.wasm"

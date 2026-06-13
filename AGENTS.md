@@ -22,7 +22,7 @@ This is a Chezmoi source repo for macOS and Linux dotfiles. Edit source files he
 
 - `.chezmoi.toml.tmpl` sets explicit profile-driven data including `profile`, `is_macos`, `is_linux`, `has_display`, `is_server`, `is_dev`, and `is_ai`; `CHEZMOI_PROFILE`, `CHEZMOI_NAME`, and `CHEZMOI_EMAIL` drive the rendered config.
 - `.chezmoiignore` is profile-aware and matches target paths, not source paths.
-- macOS package setup is in `run_once_before_2-install-packages-darwin.sh.tmpl` using inline `brew bundle`; Linux setup is in `run_onchange_before_1-install-packages-linux.sh.tmpl` using `.chezmoidata/packages.yaml` plus `apt-get` or `apk`.
+- macOS package setup is in `run_onchange_before_2-install-packages-darwin.sh.tmpl` using inline `brew bundle`; Linux setup is in `run_onchange_before_1-install-packages-linux.sh.tmpl` using `.chezmoidata/packages.yaml` plus `apt-get` or `apk`.
 - Darwin-only shell paths in `dot_zshrc.tmpl` include Homebrew NVM, Java 17, Android SDK, Antigravity, and Bun; they apply only to the `macos` profile.
 - External Powerlevel10k Meslo fonts are declared only for the `macos` profile in `.chezmoiexternal.toml.tmpl`.
 - `.chezmoiremove.tmpl` removes trust-sensitive files when a profile no longer manages them.

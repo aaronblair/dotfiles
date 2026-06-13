@@ -1,39 +1,12 @@
-{{- $profile := get . "profile" -}}
-{{- if eq $profile "" -}}
-{{- $profile = env "CHEZMOI_PROFILE" -}}
-{{- if eq $profile "" -}}
-{{- if eq .chezmoi.os "darwin" -}}
-{{- $profile = "macos" -}}
-{{- else if eq .chezmoi.os "linux" -}}
-{{- $profile = "server" -}}
-{{- else -}}
-{{- $profile = .chezmoi.os -}}
-{{- end -}}
-{{- end -}}
-{{- end -}}
-{{- $isMacos := eq $profile "macos" -}}
-{{- $isServer := eq $profile "server" -}}
-{{- $isDev := eq $profile "dev" -}}
-{{- $isAi := eq $profile "ai" -}}
-{{- $isLinux := or $isServer $isDev $isAi -}}
-{{- $profileValid := or $isMacos $isServer $isDev $isAi -}}
-{{- $profileError := "" -}}
-{{- if not $profileValid -}}
-{{- $profileError = printf "invalid CHEZMOI_PROFILE %q" $profile -}}
-{{- end -}}
-{{- if $isLinux -}}
+{{- includeTemplate ".chezmoitemplates/profile-guard.tmpl" . -}}
+{{- if .is_linux -}}
 #!/bin/sh
 set -eu
 
 ZELLIJ_VERSION="0.44.3"
 PATH="$HOME/.local/bin:$HOME/.bun/bin:$HOME/.opencode/bin:$PATH"
 
-if [ "{{ $profileValid }}" != "true" ]; then
-    echo "[chezmoi] {{ $profileError }}"
-    exit 1
-fi
-
-PROFILE="{{ $profile }}"
+PROFILE="{{ .profile }}"
 
 APT_SERVER_PACKAGES='{{ range .packages.linux.repo.apt.server }}{{ . }} {{ end }}'
 APT_DEV_PACKAGES='{{ range .packages.linux.repo.apt.dev }}{{ . }} {{ end }}'

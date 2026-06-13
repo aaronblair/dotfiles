@@ -1,20 +1,5 @@
-{{- $profile := get . "profile" -}}
-{{- if eq $profile "" -}}
-{{- $profile = env "CHEZMOI_PROFILE" -}}
-{{- if eq $profile "" -}}
-{{- if eq .chezmoi.os "darwin" -}}
-{{- $profile = "macos" -}}
-{{- else if eq .chezmoi.os "linux" -}}
-{{- $profile = "server" -}}
-{{- else -}}
-{{- $profile = .chezmoi.os -}}
-{{- end -}}
-{{- end -}}
-{{- end -}}
-{{- $isServer := eq $profile "server" -}}
-{{- $isDev := eq $profile "dev" -}}
-{{- $isAi := eq $profile "ai" -}}
-{{- if or $isServer $isDev $isAi -}}
+{{- includeTemplate ".chezmoitemplates/profile-guard.tmpl" . -}}
+{{- if .is_linux -}}
 #!/bin/sh
 set -eu
 

@@ -1,19 +1,4 @@
-{{- $profile := get . "profile" -}}
-{{- if eq $profile "" -}}
-{{- $profile = env "CHEZMOI_PROFILE" -}}
-{{- if eq $profile "" -}}
-{{- if eq .chezmoi.os "darwin" -}}
-{{- $profile = "macos" -}}
-{{- else if eq .chezmoi.os "linux" -}}
-{{- $profile = "server" -}}
-{{- else -}}
-{{- $profile = .chezmoi.os -}}
-{{- end -}}
-{{- end -}}
-{{- end -}}
-{{- $isDev := eq $profile "dev" -}}
-{{- $isAi := eq $profile "ai" -}}
-{{- $managesOpencode := or (eq $profile "macos") $isDev $isAi -}}
+{{- includeTemplate ".chezmoitemplates/profile-guard.tmpl" . -}}
 # Loaded by every zsh invocation; keep this file minimal and quiet.
 local_env_dir="${XDG_CONFIG_HOME:-$HOME/.config}/env.d"
 if [[ -d "$local_env_dir" ]]; then
@@ -35,11 +20,11 @@ if [[ -n "${TERM:-}" && "${TERM:-}" != dumb && "${TERM:-}" != linux ]] \
 fi
 
 path=("$HOME/.local/bin" $path)
-{{- if or $isDev $isAi }}
+{{- if or .is_dev .is_ai }}
 export BUN_INSTALL="$HOME/.bun"
 path=("$BUN_INSTALL/bin" $path)
 {{- end }}
-{{- if $managesOpencode }}
+{{- if .manages_opencode }}
 path=("$HOME/.opencode/bin" $path)
 {{- end }}
 typeset -U path PATH

@@ -18,6 +18,7 @@
 {{- $profileError := "" -}}
 {{- if not $profileValid -}}
 {{- $profileError = printf "invalid CHEZMOI_PROFILE %q" $profile -}}
+{{- fail $profileError -}}
 {{- end -}}
 {{- $hasDisplay := $isMacos -}}
 {{- $hasDisplayEnv := env "CHEZMOI_HAS_DISPLAY" -}}

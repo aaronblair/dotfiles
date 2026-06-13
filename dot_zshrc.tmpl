@@ -1,21 +1,4 @@
-{{- $profile := get . "profile" -}}
-{{- if eq $profile "" -}}
-{{- $profile = env "CHEZMOI_PROFILE" -}}
-{{- if eq $profile "" -}}
-{{- if eq .chezmoi.os "darwin" -}}
-{{- $profile = "macos" -}}
-{{- else if eq .chezmoi.os "linux" -}}
-{{- $profile = "server" -}}
-{{- else -}}
-{{- $profile = .chezmoi.os -}}
-{{- end -}}
-{{- end -}}
-{{- end -}}
-{{- $isMacos := eq $profile "macos" -}}
-{{- $isDev := eq $profile "dev" -}}
-{{- $isAi := eq $profile "ai" -}}
-{{- $managesOpencode := or $isMacos $isDev $isAi -}}
-{{- $installsZellij := or $isMacos $isDev $isAi -}}
+{{- includeTemplate ".chezmoitemplates/profile-guard.tmpl" . -}}
 {{- $targetHome := .chezmoi.destDir -}}
 
 # -----------------
@@ -34,10 +17,10 @@ fi
 # AB config
 # ---------
 
-{{- if or $isDev $isAi }}
+{{- if or .is_dev .is_ai }}
 export BUN_INSTALL="$HOME/.bun"
 {{- end }}
-{{- if $isMacos }}
+{{- if .is_macos }}
 export PATH="$HOME/.local/bin:$PATH"
 typeset -U path PATH
 {{- end }}
@@ -49,12 +32,12 @@ fi
 
 # TMUX Shortcut
 alias tm='tmux attach-session -t default || tmux new -t default'
-{{- if $managesOpencode }}
+{{- if .manages_opencode }}
 alias oc='opencode'
 alias occ='opencode --continue'
 {{- end }}
 
-{{- if $managesOpencode }}
+{{- if .manages_opencode }}
 ocu() {
   if ! command -v opencode > /dev/null 2>&1; then
     print 'opencode is not installed'
@@ -77,7 +60,7 @@ ocu() {
 {{- end }}
 
 # Zellij shortcuts
-{{- if $installsZellij }}
+{{- if .installs_zellij }}
 if type zellij > /dev/null 2>&1; then
   alias zj='zellij attach -c main'
   alias zja='zellij attach'
@@ -110,7 +93,7 @@ if ! type fd > /dev/null 2>&1 && type fdfind > /dev/null 2>&1; then
   alias fd='fdfind'
 fi
 
-{{- if $isMacos }}
+{{- if .is_macos }}
 # NVM setup (sourced after zim init to avoid compinit conflict)
 export NVM_DIR="{{ $targetHome }}/.nvm"
 
@@ -269,7 +252,7 @@ unset key
 # ------------------------------
 # These must be sourced AFTER zim init to avoid compinit conflicts
 
-{{- if $isMacos }}
+{{- if .is_macos }}
 # NVM (Homebrew)
 [[ -n "${HOMEBREW_PREFIX:-}" ]] && [ -s "${HOMEBREW_PREFIX}/opt/nvm/nvm.sh" ] && \. "${HOMEBREW_PREFIX}/opt/nvm/nvm.sh"
 

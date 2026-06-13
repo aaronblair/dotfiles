@@ -1,31 +1,4 @@
-{{- $profile := get . "profile" -}}
-{{- if eq $profile "" -}}
-{{- $profile = env "CHEZMOI_PROFILE" -}}
-{{- if eq $profile "" -}}
-{{- if eq .chezmoi.os "darwin" -}}
-{{- $profile = "macos" -}}
-{{- else if eq .chezmoi.os "linux" -}}
-{{- $profile = "server" -}}
-{{- else -}}
-{{- $profile = .chezmoi.os -}}
-{{- end -}}
-{{- end -}}
-{{- end -}}
-{{- $isMacos := eq $profile "macos" -}}
-{{- $isServer := eq $profile "server" -}}
-{{- $isDev := eq $profile "dev" -}}
-{{- $isAi := eq $profile "ai" -}}
-{{- $isLinux := or $isServer $isDev $isAi -}}
-{{- $hasDisplay := $isMacos -}}
-{{- $hasDisplayEnv := env "CHEZMOI_HAS_DISPLAY" -}}
-{{- if or (eq $hasDisplayEnv "1") (eq $hasDisplayEnv "true") -}}
-{{- $hasDisplay = true -}}
-{{- else if or (eq $hasDisplayEnv "0") (eq $hasDisplayEnv "false") -}}
-{{- $hasDisplay = false -}}
-{{- end -}}
-{{- $managesPersonalSSH := or $isMacos $isDev -}}
-{{- $managesGh := or $isMacos $isDev -}}
-{{- $managesOpencode := or $isMacos $isDev $isAi -}}
+{{- includeTemplate ".chezmoitemplates/profile-guard.tmpl" . -}}
 
 README.md
 AGENTS.md
@@ -35,35 +8,35 @@ prd.md
 Users/
 Users/**
 
-{{- if not $isMacos }}
+{{- if not .is_macos }}
 # Darwin-only (skip on Linux)
 Library/
-run_once_*darwin*
+run_*darwin*
 {{- end }}
 
-{{- if not $isLinux }}
+{{- if not .is_linux }}
 # Linux-only
-run_once_*linux*
+run_*linux*
 {{- end }}
 
-{{- if not $hasDisplay }}
+{{- if not .has_display }}
 # GUI apps not needed on non-display profiles.
 .wezterm.lua
 .config/ghostty
 .config/ghostty/**
 {{- end }}
 
-{{- if not $managesPersonalSSH }}
+{{- if not .manages_personal_ssh }}
 .ssh
 .ssh/**
 {{- end }}
 
-{{- if not $managesGh }}
+{{- if not .manages_gh }}
 .config/gh
 .config/gh/**
 {{- end }}
 
-{{- if not $managesOpencode }}
+{{- if not .manages_opencode }}
 .config/opencode
 .config/opencode/**
 {{- end }}

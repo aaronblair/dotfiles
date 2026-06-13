@@ -21,8 +21,8 @@ fi
 
 path=("$HOME/.local/bin" $path)
 {{- if or .is_dev .is_ai }}
-export BUN_INSTALL="$HOME/.bun"
-path=("$BUN_INSTALL/bin" $path)
+export PNPM_HOME="${PNPM_HOME:-$HOME/.local/share/pnpm}"
+path=("$PNPM_HOME" $path)
 {{- end }}
 {{- if .manages_opencode }}
 path=("$HOME/.opencode/bin" $path)

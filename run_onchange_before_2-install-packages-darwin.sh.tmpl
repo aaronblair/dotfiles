@@ -23,7 +23,9 @@ brew "lazygit" # Used by vim
 brew "mas"
 brew "ncdu"
 brew "neovim"
+brew "node"
 brew "ocrmypdf"
+brew "pnpm"
 brew "ripgrep"
 brew "scrcpy"
 brew "ssh-copy-id", link: true
@@ -72,4 +74,33 @@ EOF
 else
   echo "[chezmoi] Not signed into the Mac App Store; skipping mas apps."
 fi
+
+export PNPM_HOME="${PNPM_HOME:-$HOME/.local/share/pnpm}"
+export PNPM_GLOBAL_DIR="${PNPM_GLOBAL_DIR:-$HOME/.local/share/pnpm/global}"
+export PATH="$PNPM_HOME:$PATH"
+mkdir -p "$PNPM_HOME" "$PNPM_GLOBAL_DIR"
+
+PNPM_CMD="pnpm"
+if command -v brew > /dev/null 2>&1; then
+  HOMEBREW_PREFIX="$(brew --prefix)"
+  if [ -x "$HOMEBREW_PREFIX/bin/pnpm" ]; then
+    PNPM_CMD="$HOMEBREW_PREFIX/bin/pnpm"
+  fi
+fi
+
+KAGI_KEN_CLI_BIN=""
+if command -v kagi-ken-cli > /dev/null 2>&1; then
+  KAGI_KEN_CLI_BIN="$(command -v kagi-ken-cli)"
+fi
+
+case "$KAGI_KEN_CLI_BIN" in
+  "$PNPM_HOME"/*) ;;
+  *)
+    echo "[chezmoi] Installing kagi-ken-cli with pnpm..."
+    "$PNPM_CMD" --config.global-bin-dir="$PNPM_HOME" \
+      --config.global-dir="$PNPM_GLOBAL_DIR" \
+      --config.block-exotic-subdeps=false \
+      add --global "github:czottmann/kagi-ken-cli#44b44f2"
+    ;;
+esac
 {{ end -}}

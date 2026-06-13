@@ -106,7 +106,7 @@ chezmoi init aaronblair --apply
 ### dev
 
 - `server` tools plus richer dev tooling
-- installs `uv`, `bun`, `opencode`, and `zellij`
+- installs `uv`, Node.js, `pnpm`, `kagi-ken-cli`, `opencode`, and `zellij`
 - manages `~/.ssh/config`
 - manages `~/.config/gh/*`
 - bootstraps Neovim plugins and Tree-sitter parsers
@@ -114,7 +114,7 @@ chezmoi init aaronblair --apply
 ### ai
 
 - dev-capable Linux environment for disposable boxes
-- installs `uv`, `bun`, `opencode`, and `zellij`
+- installs `uv`, Node.js, `pnpm`, `kagi-ken-cli`, `opencode`, and `zellij`
 - does not manage personal SSH traversal config
 - does not manage GitHub CLI auth/trust config
 - keeps OpenCode config under `~/.config/opencode`
@@ -125,7 +125,7 @@ Linux packages are defined declaratively in `.chezmoidata/packages.yaml` and ins
 
 - package tier changes re-run cleanly on the next `chezmoi apply`
 - `apt` and `apk` installs are best-effort for repo packages
-- `uv`, `bun`, `opencode`, and `zellij` are installed by profile-aware installer logic for `dev` and `ai`
+- `uv`, Node.js, `pnpm`, `kagi-ken-cli`, `opencode`, and `zellij` are installed by profile-aware installer logic for `dev` and `ai`
 
 ## Profile Switching
 

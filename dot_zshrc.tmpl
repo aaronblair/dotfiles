@@ -17,8 +17,9 @@ fi
 # AB config
 # ---------
 
-{{- if or .is_dev .is_ai }}
-export BUN_INSTALL="$HOME/.bun"
+{{- if or .is_macos .is_dev .is_ai }}
+export PNPM_HOME="${PNPM_HOME:-$HOME/.local/share/pnpm}"
+export PATH="$PNPM_HOME:$PATH"
 {{- end }}
 {{- if .is_macos }}
 export PATH="$HOME/.local/bin:$PATH"
@@ -106,9 +107,6 @@ export PATH=$PATH:$ANDROID_HOME/platform-tools
 # Antigravity
 export PATH="{{ $targetHome }}/.antigravity/antigravity/bin:$PATH"
 
-# Bun
-export BUN_INSTALL="{{ $targetHome }}/.bun"
-export PATH="$BUN_INSTALL/bin:$PATH"
 {{- end }}
 
 
@@ -255,9 +253,6 @@ unset key
 {{- if .is_macos }}
 # NVM (Homebrew)
 [[ -n "${HOMEBREW_PREFIX:-}" ]] && [ -s "${HOMEBREW_PREFIX}/opt/nvm/nvm.sh" ] && \. "${HOMEBREW_PREFIX}/opt/nvm/nvm.sh"
-
-# Bun completions
-[ -s "{{ $targetHome }}/.bun/_bun" ] && source "{{ $targetHome }}/.bun/_bun"
 
 # VSCode shell integration (must be after zim init)
 # https://github.com/saoudrizwan/shell-integration-problems

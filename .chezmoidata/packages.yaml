@@ -20,6 +20,7 @@ packages:
           - rsync
           - tmux
           - unzip
+          - xz-utils
           - zoxide
           - zsh
         dev:
@@ -53,6 +54,7 @@ packages:
           - rsync
           - tmux
           - unzip
+          - xz
           - zoxide
           - zsh
         dev:
@@ -70,11 +72,15 @@ packages:
     install:
       dev:
         - uv
-        - bun
+        - node
+        - pnpm
+        - kagi-ken-cli
         - opencode
         - zellij
       ai:
         - uv
-        - bun
+        - node
+        - pnpm
+        - kagi-ken-cli
         - opencode
         - zellij

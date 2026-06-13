@@ -10,10 +10,16 @@
 - Never use bare `pip`, `pip3`, `virtualenv`, `conda`, or `poetry`.
 
 ### JavaScript / TypeScript
-- Prefer `bun` over `npm` for all operations.
-- Use `bun run`, `bun install`, `bun add`, `bunx`, `bun test`.
-- Fall back to `npm`/`npx` only when bun is incompatible (e.g., native
-  Node.js-only modules or platform constraints).
+- Prefer Node.js with `pnpm` as the safe default for JavaScript and TypeScript
+  work.
+- Respect the project's declared package manager first: check `packageManager`
+  in `package.json` and existing lockfiles before running install commands.
+- If no package manager is declared, use `pnpm`.
+- Use `pnpm install`, `pnpm run <script>`, `pnpm exec <bin>`, `pnpm dlx <pkg>`,
+  and `pnpm test` when using pnpm.
+- Use `node` for direct script execution; do not use `bun` unless the project
+  explicitly declares Bun.
+- Do not introduce or replace lockfiles unless dependency changes are intended.
 
 ### Go
 - Use the standard Go toolchain: `go run`, `go test`, `go build`,
@@ -79,7 +85,8 @@
   operations.
 - Verify a dependency is actively maintained before suggesting it.
 - Python: add dependencies via `uv add`.
-- JS/TS: add dependencies via `bun add`.
+- JS/TS: add dependencies via `pnpm add`; use `pnpm add -D` for dev-only
+  dependencies.
 
 ## Workflow
 

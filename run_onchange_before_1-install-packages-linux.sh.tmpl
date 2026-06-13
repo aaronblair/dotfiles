@@ -4,7 +4,12 @@
 set -eu
 
 ZELLIJ_VERSION="0.44.3"
-PATH="$HOME/.local/bin:$HOME/.bun/bin:$HOME/.opencode/bin:$PATH"
+NODE_VERSION="22.21.1"
+NODE_HOME="$HOME/.local/share/node"
+PNPM_VERSION="11.6.0"
+PNPM_HOME="${PNPM_HOME:-$HOME/.local/share/pnpm}"
+PNPM_GLOBAL_DIR="${PNPM_GLOBAL_DIR:-$HOME/.local/share/pnpm/global}"
+PATH="$HOME/.local/bin:$NODE_HOME/bin:$PNPM_HOME:$HOME/.opencode/bin:$PATH"
 
 PROFILE="{{ .profile }}"
 
@@ -127,13 +132,83 @@ install_uv() {
     fetch_url "https://astral.sh/uv/install.sh" | sh
 }
 
-install_bun() {
-    if command -v bun > /dev/null 2>&1; then
+install_node() {
+    if command -v node > /dev/null 2>&1; then
+        NODE_CURRENT_VERSION="$(node -v 2> /dev/null || true)"
+        NODE_CURRENT_MAJOR="${NODE_CURRENT_VERSION#v}"
+        NODE_CURRENT_MAJOR="${NODE_CURRENT_MAJOR%%.*}"
+        if [ "${NODE_CURRENT_MAJOR:-0}" -ge 22 ] 2> /dev/null; then
+            return
+        fi
+    fi
+
+    echo "[chezmoi] Installing Node.js ${NODE_VERSION} to ~/.local/share/node..."
+
+    case "$(uname -m)" in
+        x86_64|amd64) NODE_ARCH="x64" ;;
+        aarch64|arm64) NODE_ARCH="arm64" ;;
+        *)
+            echo "[chezmoi] Unsupported architecture for Node.js binary: $(uname -m)"
+            exit 0
+            ;;
+    esac
+
+    mkdir -p "$HOME/.local/share" "$HOME/.local/bin"
+    NODE_TARBALL="node-v${NODE_VERSION}-linux-${NODE_ARCH}.tar.xz"
+    NODE_TMPDIR="$(mktemp -d)"
+    trap 'rm -rf "$NODE_TMPDIR"' EXIT HUP INT TERM
+
+    fetch_url "https://nodejs.org/dist/v${NODE_VERSION}/${NODE_TARBALL}" > "$NODE_TMPDIR/$NODE_TARBALL"
+    xz -dc "$NODE_TMPDIR/$NODE_TARBALL" | tar -xf - -C "$HOME/.local/share"
+    ln -sfn "$HOME/.local/share/node-v${NODE_VERSION}-linux-${NODE_ARCH}" "$NODE_HOME"
+    ln -sf "$NODE_HOME/bin/node" "$HOME/.local/bin/node"
+    ln -sf "$NODE_HOME/bin/npm" "$HOME/.local/bin/npm"
+    ln -sf "$NODE_HOME/bin/npx" "$HOME/.local/bin/npx"
+    ln -sf "$NODE_HOME/bin/corepack" "$HOME/.local/bin/corepack"
+    rm -rf "$NODE_TMPDIR"
+    trap - EXIT HUP INT TERM
+}
+
+install_pnpm() {
+    if command -v pnpm > /dev/null 2>&1 && pnpm --version > /dev/null 2>&1; then
         return
     fi
 
-    echo "[chezmoi] Installing bun..."
-    fetch_url "https://bun.sh/install" | bash
+    echo "[chezmoi] Installing pnpm ${PNPM_VERSION} to ~/.local/bin..."
+
+    case "$(uname -m)" in
+        x86_64|amd64) PNPM_ARCH="x64" ;;
+        aarch64|arm64) PNPM_ARCH="arm64" ;;
+        *)
+            echo "[chezmoi] Unsupported architecture for pnpm binary: $(uname -m)"
+            exit 0
+            ;;
+    esac
+
+    mkdir -p "$HOME/.local/bin"
+    fetch_url "https://github.com/pnpm/pnpm/releases/download/v${PNPM_VERSION}/pnpm-linuxstatic-${PNPM_ARCH}" > "$HOME/.local/bin/pnpm"
+    chmod 0755 "$HOME/.local/bin/pnpm"
+    hash -r 2> /dev/null || true
+}
+
+install_kagi_ken_cli() {
+    if command -v kagi-ken-cli > /dev/null 2>&1; then
+        KAGI_KEN_CLI_BIN="$(command -v kagi-ken-cli)"
+        case "$KAGI_KEN_CLI_BIN" in
+            "$PNPM_HOME"/*)
+                return
+                ;;
+        esac
+    fi
+
+    install_pnpm
+    mkdir -p "$PNPM_HOME" "$PNPM_GLOBAL_DIR"
+
+    echo "[chezmoi] Installing kagi-ken-cli with pnpm..."
+    pnpm --config.global-bin-dir="$PNPM_HOME" \
+        --config.global-dir="$PNPM_GLOBAL_DIR" \
+        --config.block-exotic-subdeps=false \
+        add --global "github:czottmann/kagi-ken-cli#44b44f2"
 }
 
 install_opencode() {
@@ -182,8 +257,14 @@ run_profile_installers() {
             uv)
                 install_uv
                 ;;
-            bun)
-                install_bun
+            node)
+                install_node
+                ;;
+            pnpm)
+                install_pnpm
+                ;;
+            kagi-ken-cli)
+                install_kagi_ken_cli
                 ;;
             opencode)
                 install_opencode

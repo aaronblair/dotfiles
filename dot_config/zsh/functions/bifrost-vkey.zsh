@@ -11,10 +11,11 @@ _profile_env_value() {
   print -r -- "$value"
 }
 
-_bifrost_login_token() {
+_bifrost_login() {
   local base_url="$1"
   local username="$2"
   local password="$3"
+  local cookie_jar="$4"
   local payload
   local response
 
@@ -24,6 +25,7 @@ _bifrost_login_token() {
     '{username: $username, password: $password}')"
 
   response="$(curl -fsSL -X POST "${base_url%/}/api/session/login" \
+    -c "$cookie_jar" \
     -H 'Content-Type: application/json' \
     -d "$payload")" || return 1
 
@@ -136,7 +138,8 @@ bifrost_vkey() {
       -h|--help)
         print 'usage: bifrost_vkey [dev|ai|server|macos] [--from NAME|--no-source] [--dry-run]'
         print 'requires: BIFROST_BASE_URL'
-        print 'auth: none by default; or BIFROST_AUTH_TOKEN, BIFROST_API_KEY, BIFROST_USERNAME/BIFROST_PASSWORD, or BIFROST_AUTH_HEADER/BIFROST_AUTH_VALUE'
+        print 'auth: none by default; or BIFROST_ADMIN_USERNAME/BIFROST_ADMIN_PASSWORD, BIFROST_AUTH_TOKEN, BIFROST_API_KEY, or BIFROST_AUTH_HEADER/BIFROST_AUTH_VALUE'
+        print 'auth aliases: BIFROST_USERNAME/BIFROST_PASSWORD are also supported'
         print 'dev default: copy non-secret governance config from virtual key named openclaw-main'
         print 'manual mode: set BIFROST_PROVIDER_CONFIGS_JSON[_PROFILE] with provider_configs[].key_ids, or set BIFROST_KEY_IDS_JSON[_PROFILE]'
         print 'optional: BIFROST_TEAM_ID[_PROFILE], BIFROST_CUSTOMER_ID[_PROFILE], budget/rate-limit env vars'
@@ -161,8 +164,8 @@ bifrost_vkey() {
   local api_key="$(_profile_env_value BIFROST_API_KEY "$profile")"
   local auth_header="$(_profile_env_value BIFROST_AUTH_HEADER "$profile")"
   local auth_value="$(_profile_env_value BIFROST_AUTH_VALUE "$profile")"
-  local auth_username="$(_profile_env_value BIFROST_USERNAME "$profile")"
-  local auth_password="$(_profile_env_value BIFROST_PASSWORD "$profile")"
+  local auth_username="$(_profile_env_value BIFROST_ADMIN_USERNAME "$profile")"
+  local auth_password="$(_profile_env_value BIFROST_ADMIN_PASSWORD "$profile")"
   local provider_configs_json="$(_profile_env_value BIFROST_PROVIDER_CONFIGS_JSON "$profile")"
   local mcp_configs_json="$(_profile_env_value BIFROST_MCP_CONFIGS_JSON "$profile")"
   local team_id="$(_profile_env_value BIFROST_TEAM_ID "$profile")"
@@ -183,10 +186,10 @@ bifrost_vkey() {
   fi
 
   if [[ -z "$auth_username" ]]; then
-    auth_username="$(_profile_env_value BIFROST_ADMIN_USERNAME "$profile")"
+    auth_username="$(_profile_env_value BIFROST_USERNAME "$profile")"
   fi
   if [[ -z "$auth_password" ]]; then
-    auth_password="$(_profile_env_value BIFROST_ADMIN_PASSWORD "$profile")"
+    auth_password="$(_profile_env_value BIFROST_PASSWORD "$profile")"
   fi
 
   if [[ -z "$base_url" ]]; then
@@ -196,6 +199,7 @@ bifrost_vkey() {
 
   local -a auth_args
   local auth_needs_login=0
+  local auth_cookie_jar=""
   if [[ -n "$auth_header" || -n "$auth_value" ]]; then
     if [[ -z "$auth_header" || -z "$auth_value" ]]; then
       print -u2 -- 'bifrost_vkey: BIFROST_AUTH_HEADER and BIFROST_AUTH_VALUE must be set together'
@@ -208,7 +212,7 @@ bifrost_vkey() {
     auth_args=(-H "x-api-key: $api_key")
   elif [[ -n "$auth_username" || -n "$auth_password" ]]; then
     if [[ -z "$auth_username" || -z "$auth_password" ]]; then
-      print -u2 -- 'bifrost_vkey: BIFROST_USERNAME and BIFROST_PASSWORD must be set together'
+      print -u2 -- 'bifrost_vkey: BIFROST_ADMIN_USERNAME and BIFROST_ADMIN_PASSWORD must be set together'
       return 1
     fi
     auth_needs_login=1
@@ -228,19 +232,28 @@ bifrost_vkey() {
   if [[ -n "$source_vkey_name" ]]; then
     local source_config
     if (( auth_needs_login )); then
-      auth_token="$(_bifrost_login_token "$base_url" "$auth_username" "$auth_password")" || {
+      auth_cookie_jar="$(mktemp)"
+      auth_token="$(_bifrost_login "$base_url" "$auth_username" "$auth_password" "$auth_cookie_jar")" || {
+        rm -f "$auth_cookie_jar"
         print -u2 -- 'bifrost_vkey: Bifrost login failed'
         return 1
       }
-      if [[ -z "$auth_token" ]]; then
-        print -u2 -- 'bifrost_vkey: Bifrost login response did not include a token'
+      if [[ -n "$auth_token" ]]; then
+        auth_args=(-H "Authorization: Bearer $auth_token")
+      elif [[ -s "$auth_cookie_jar" ]]; then
+        auth_args=(-b "$auth_cookie_jar")
+      else
+        rm -f "$auth_cookie_jar"
+        print -u2 -- 'bifrost_vkey: Bifrost login response did not include a token or session cookie'
         return 1
       fi
-      auth_args=(-H "Authorization: Bearer $auth_token")
       auth_needs_login=0
     fi
 
     source_config="$(_bifrost_virtual_key_by_name "$base_url" "$source_vkey_name" "${auth_args[@]}")" || {
+      if [[ -n "$auth_cookie_jar" ]]; then
+        rm -f "$auth_cookie_jar"
+      fi
       print -u2 -- "bifrost_vkey: could not find source virtual key: $source_vkey_name"
       return 1
     }
@@ -368,27 +381,45 @@ bifrost_vkey() {
   fi
 
   if (( dry_run )); then
+    if [[ -n "$auth_cookie_jar" ]]; then
+      rm -f "$auth_cookie_jar"
+    fi
     print -- "$payload"
     return 0
   fi
 
   if (( auth_needs_login )); then
-    auth_token="$(_bifrost_login_token "$base_url" "$auth_username" "$auth_password")" || {
+    auth_cookie_jar="$(mktemp)"
+    auth_token="$(_bifrost_login "$base_url" "$auth_username" "$auth_password" "$auth_cookie_jar")" || {
+      rm -f "$auth_cookie_jar"
       print -u2 -- 'bifrost_vkey: Bifrost login failed'
       return 1
     }
-    if [[ -z "$auth_token" ]]; then
-      print -u2 -- 'bifrost_vkey: Bifrost login response did not include a token'
+    if [[ -n "$auth_token" ]]; then
+      auth_args=(-H "Authorization: Bearer $auth_token")
+    elif [[ -s "$auth_cookie_jar" ]]; then
+      auth_args=(-b "$auth_cookie_jar")
+    else
+      rm -f "$auth_cookie_jar"
+      print -u2 -- 'bifrost_vkey: Bifrost login response did not include a token or session cookie'
       return 1
     fi
-    auth_args=(-H "Authorization: Bearer $auth_token")
   fi
 
   local response
   response="$(curl -fsSL -X POST "${base_url%/}/api/governance/virtual-keys" \
     -H 'Content-Type: application/json' \
     "${auth_args[@]}" \
-    -d "$payload")" || return 1
+    -d "$payload")" || {
+      if [[ -n "$auth_cookie_jar" ]]; then
+        rm -f "$auth_cookie_jar"
+      fi
+      return 1
+    }
+
+  if [[ -n "$auth_cookie_jar" ]]; then
+    rm -f "$auth_cookie_jar"
+  fi
 
   local virtual_key="$(jq -r '.value // .virtual_key.value // .data.value // empty' <<<"$response")"
   local virtual_key_id="$(jq -r '.id // .virtual_key.id // .data.id // empty' <<<"$response")"

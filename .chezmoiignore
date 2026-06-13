@@ -43,7 +43,6 @@ run_once_*darwin*
 
 {{- if not $isLinux }}
 # Linux-only
-.zshenv
 run_once_*linux*
 {{- end }}
 

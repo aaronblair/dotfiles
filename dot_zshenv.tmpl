@@ -15,6 +15,15 @@
 {{- $isAi := eq $profile "ai" -}}
 {{- $managesOpencode := or (eq $profile "macos") $isDev $isAi -}}
 # Loaded by every zsh invocation; keep this file minimal and quiet.
+local_env_dir="${XDG_CONFIG_HOME:-$HOME/.config}/env.d"
+if [[ -d "$local_env_dir" ]]; then
+  for local_env_file in "$local_env_dir"/*.zsh(N); do
+    source "$local_env_file"
+  done
+  unset local_env_file
+fi
+unset local_env_dir
+
 {{- if eq .chezmoi.os "linux" }}
 # Debian/Ubuntu initialize completion globally unless this is set before /etc/zsh/zshrc.
 skip_global_compinit=1
@@ -24,15 +33,6 @@ if [[ -n "${TERM:-}" && "${TERM:-}" != dumb && "${TERM:-}" != linux ]] \
   && ! infocmp "$TERM" > /dev/null 2>&1; then
   export TERM=xterm-256color
 fi
-
-local_env_dir="${XDG_CONFIG_HOME:-$HOME/.config}/env.d"
-if [[ -d "$local_env_dir" ]]; then
-  for local_env_file in "$local_env_dir"/*.zsh(N); do
-    source "$local_env_file"
-  done
-  unset local_env_file
-fi
-unset local_env_dir
 
 path=("$HOME/.local/bin" $path)
 {{- if or $isDev $isAi }}

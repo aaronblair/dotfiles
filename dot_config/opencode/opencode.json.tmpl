@@ -1,6 +1,178 @@
+{{- $hasBifrost := and (env "BIFROST_BASE_URL") (env "BIFROST_VIRTUAL_KEY") -}}
 {
   "$schema": "https://opencode.ai/config.json",
+  {{- if $hasBifrost }}
+  "model": "bifrost-openai/gpt-5.5",
+  "small_model": "bifrost-openai/gpt-5.4-mini",
+  {{- end }}
   "plugin": [],
+  {{- if $hasBifrost }}
+  "provider": {
+    "bifrost-openai": {
+      "name": "Bifrost OpenAI",
+      "npm": "@ai-sdk/openai",
+      "options": {
+        "baseURL": "{env:BIFROST_BASE_URL}/openai/v1",
+        "apiKey": "{env:BIFROST_VIRTUAL_KEY}"
+      },
+      "models": {
+        "gpt-5": {
+          "name": "GPT-5",
+          "family": "gpt-5",
+          "tool_call": true,
+          "reasoning": true,
+          "attachment": true,
+          "limit": { "context": 272000, "output": 32768 }
+        },
+        "gpt-5.5": {
+          "name": "GPT-5.5",
+          "family": "gpt-5",
+          "tool_call": true,
+          "reasoning": true,
+          "attachment": true,
+          "limit": { "context": 1050000, "output": 32768 }
+        },
+        "gpt-5.4": {
+          "name": "GPT-5.4",
+          "family": "gpt-5",
+          "tool_call": true,
+          "reasoning": true,
+          "attachment": true,
+          "limit": { "context": 1050000, "output": 32768 }
+        },
+        "gpt-5.4-mini": {
+          "name": "GPT-5.4 Mini",
+          "family": "gpt-5",
+          "tool_call": true,
+          "reasoning": true,
+          "attachment": true,
+          "limit": { "context": 272000, "output": 32768 }
+        },
+        "gpt-5.4-nano": {
+          "name": "GPT-5.4 Nano",
+          "family": "gpt-5",
+          "tool_call": true,
+          "reasoning": true,
+          "attachment": true,
+          "limit": { "context": 272000, "output": 32768 }
+        },
+        "gpt-5.3-codex": {
+          "name": "GPT-5.3 Codex",
+          "family": "gpt-5",
+          "tool_call": true,
+          "reasoning": true,
+          "attachment": true,
+          "limit": { "context": 272000, "output": 32768 }
+        }
+      }
+    },
+    "bifrost-anthropic": {
+      "name": "Bifrost Anthropic",
+      "api": "openai",
+      "options": {
+        "baseURL": "{env:BIFROST_BASE_URL}/openai/v1",
+        "apiKey": "{env:BIFROST_VIRTUAL_KEY}",
+        "headers": { "x-model-provider": "anthropic" }
+      },
+      "models": {
+        "claude-sonnet-4-6": {
+          "name": "Claude Sonnet 4.6",
+          "family": "claude",
+          "tool_call": true,
+          "reasoning": true,
+          "attachment": true,
+          "limit": { "context": 1000000, "output": 32768 }
+        },
+        "claude-opus-4-6": {
+          "name": "Claude Opus 4.6",
+          "family": "claude",
+          "tool_call": true,
+          "reasoning": true,
+          "attachment": true,
+          "limit": { "context": 1000000, "output": 32768 }
+        },
+        "claude-haiku-4-5": {
+          "name": "Claude Haiku 4.5",
+          "family": "claude",
+          "tool_call": true,
+          "reasoning": true,
+          "attachment": true,
+          "limit": { "context": 200000, "output": 32768 }
+        }
+      }
+    },
+    "bifrost-gemini": {
+      "name": "Bifrost Gemini",
+      "api": "openai",
+      "options": {
+        "baseURL": "{env:BIFROST_BASE_URL}/openai/v1",
+        "apiKey": "{env:BIFROST_VIRTUAL_KEY}",
+        "headers": { "x-model-provider": "gemini" }
+      },
+      "models": {
+        "gemini-flash-latest": {
+          "name": "Gemini Flash Latest",
+          "family": "gemini",
+          "tool_call": true,
+          "reasoning": true,
+          "attachment": true,
+          "limit": { "context": 1000000, "output": 32768 }
+        },
+        "gemini-flash-lite-latest": {
+          "name": "Gemini Flash Lite Latest",
+          "family": "gemini",
+          "tool_call": true,
+          "reasoning": true,
+          "attachment": true,
+          "limit": { "context": 1000000, "output": 32768 }
+        },
+        "gemini-pro-latest": {
+          "name": "Gemini Pro Latest",
+          "family": "gemini",
+          "tool_call": true,
+          "reasoning": true,
+          "attachment": true,
+          "limit": { "context": 1000000, "output": 32768 }
+        }
+      }
+    },
+    "bifrost-openrouter": {
+      "name": "Bifrost OpenRouter",
+      "api": "openai",
+      "options": {
+        "baseURL": "{env:BIFROST_BASE_URL}/openai/v1",
+        "apiKey": "{env:BIFROST_VIRTUAL_KEY}",
+        "headers": { "x-model-provider": "openrouter" }
+      },
+      "models": {
+        "deepseek/deepseek-v4-pro": {
+          "name": "DeepSeek V4 Pro",
+          "family": "deepseek",
+          "tool_call": true,
+          "reasoning": false,
+          "attachment": false,
+          "limit": { "context": 200000, "output": 32768 }
+        },
+        "deepseek/deepseek-v4-flash": {
+          "name": "DeepSeek V4 Flash",
+          "family": "deepseek",
+          "tool_call": true,
+          "reasoning": false,
+          "attachment": false,
+          "limit": { "context": 200000, "output": 32768 }
+        },
+        "~moonshotai/kimi-latest": {
+          "name": "Kimi Latest",
+          "family": "kimi",
+          "tool_call": true,
+          "reasoning": false,
+          "attachment": false,
+          "limit": { "context": 200000, "output": 32768 }
+        }
+      }
+    }
+  },
+  {{- end }}
   "permission": {
     "read": {
       "~/.config/env.d": "deny",

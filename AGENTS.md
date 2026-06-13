@@ -31,6 +31,7 @@ This is a Chezmoi source repo for macOS and Linux dotfiles. Edit source files he
 - Lua formatting convention for Neovim is in `dot_config/nvim/stylua.toml`: 2-space indents and 120 columns.
 - `run_once_after_4-setup-nvim.sh.tmpl` bootstraps Neovim only for `macos`, `dev`, and `ai`, ignoring failures so bootstrap can continue.
 - OpenCode config is managed under `dot_config/opencode`; its config denies tool access to `~/.config/env.d/**` because that directory is for local secrets.
+- `dot_zshenv.tmpl` loads `~/.config/env.d/*.zsh` on all platforms; keep it quiet because zsh reads it for every invocation.
 - `dot_config/zsh/functions/bifrost-vkey.zsh` provides `bifrost_vkey`; `dev` defaults to copying non-secret governance config from Bifrost virtual key `openclaw-main`.
 - Do not read, print, edit, stage, or commit files under `~/.config/env.d/`; they are intentionally unmanaged local secret stores.
 

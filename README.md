@@ -145,21 +145,26 @@ This is mainly used to clean up trust-sensitive state when moving away from `dev
 - not installed by default for `server`
 - shell shortcuts in `~/.zshrc`: `oc`, `occ`, `ocu`
 - Context7 MCP is enabled only when `CONTEXT7_API_KEY` is present
-- local secrets are loaded from `~/.config/env.d/*.zsh` on Linux profiles and denied to OpenCode tools by config
+- local secrets are loaded from `~/.config/env.d/*.zsh` by zsh and denied to OpenCode tools by config
 - `bifrost_vkey dev` creates a new Bifrost virtual key by copying non-secret governance settings from the existing `openclaw-main` virtual key
 
 ## Local Secrets
 
-Secret values are intentionally not managed by Chezmoi. Put machine-local exports in `~/.config/env.d/*.zsh`; these files are sourced by zsh on Linux profiles before interactive startup.
+Secret values are intentionally not managed by Chezmoi. Put machine-local exports in `~/.config/env.d/*.zsh`; these files are sourced by zsh startup on managed machines.
 
 Example local file:
 
 ```zsh
 export CONTEXT7_API_KEY="..."
 export BIFROST_BASE_URL="https://bifrost.example"
+```
+
+Example Bifrost admin auth file, such as `~/.config/env.d/bifrost-admin.zsh`:
+
+```zsh
 # Only needed when Bifrost dashboard auth is enabled:
-export BIFROST_USERNAME="..."
-export BIFROST_PASSWORD="..."
+export BIFROST_ADMIN_USERNAME="admin"
+export BIFROST_ADMIN_PASSWORD="..."
 ```
 
 OpenCode is configured to deny read/edit/glob/grep/list access to `~/.config/env.d/**`. Do not commit those files or paste their contents into agent sessions.
@@ -174,7 +179,7 @@ Required local env:
 export BIFROST_BASE_URL="https://bifrost.example"
 ```
 
-Authentication defaults to no auth, which matches Bifrost when dashboard auth is disabled. If dashboard auth is enabled, set `BIFROST_USERNAME` and `BIFROST_PASSWORD`; the helper logs in through `/api/session/login` and uses the returned session token. You can also set `BIFROST_AUTH_TOKEN`, `BIFROST_API_KEY`, or `BIFROST_AUTH_HEADER` plus `BIFROST_AUTH_VALUE` for custom deployments.
+Authentication defaults to no auth, which matches Bifrost when dashboard auth is disabled. If dashboard auth is enabled, set `BIFROST_ADMIN_USERNAME` and `BIFROST_ADMIN_PASSWORD`; the helper logs in through `/api/session/login` and uses either the returned session token or the session cookie set by Bifrost. `BIFROST_USERNAME` and `BIFROST_PASSWORD` remain supported aliases. You can also set `BIFROST_AUTH_TOKEN`, `BIFROST_API_KEY`, or `BIFROST_AUTH_HEADER` plus `BIFROST_AUTH_VALUE` for custom deployments.
 
 Default dev usage:
 
@@ -200,6 +205,71 @@ bifrost_vkey dev --no-source
 ```
 
 Alternatively, `BIFROST_KEY_IDS_JSON[_PROFILE]` applies the same provider key IDs to any provider config that does not already include `key_ids`.
+
+### OpenCode with Bifrost
+
+Each machine should point directly at Bifrost with its own local virtual key. Do not make `smed`, OpenClaw, or other hosts depend on each other for inference.
+
+The generated OpenCode runtime secret lives in `~/.config/env.d/opencode-bifrost.zsh`:
+
+```zsh
+export BIFROST_BASE_URL="https://bifrost.example"
+export BIFROST_VIRTUAL_KEY="sk-bf-..."
+export BIFROST_VIRTUAL_KEY_ID="..."
+export BIFROST_PROFILE="dev"
+```
+
+For OpenCode, keep GPT-5-family models on `@ai-sdk/openai` so the Responses-capable route is used. Non-GPT Bifrost families can be split into separate providers that point at the same Bifrost base URL and virtual key.
+
+Current verified `smed` provider shape:
+
+```json
+{
+  "model": "bifrost-openai/gpt-5.5",
+  "small_model": "bifrost-openai/gpt-5.4-mini",
+  "provider": {
+    "bifrost-openai": {
+      "name": "Bifrost OpenAI",
+      "npm": "@ai-sdk/openai",
+      "options": {
+        "baseURL": "{env:BIFROST_BASE_URL}/openai/v1",
+        "apiKey": "{env:BIFROST_VIRTUAL_KEY}"
+      }
+    },
+    "bifrost-anthropic": {
+      "name": "Bifrost Anthropic",
+      "api": "openai",
+      "options": {
+        "baseURL": "{env:BIFROST_BASE_URL}/openai/v1",
+        "apiKey": "{env:BIFROST_VIRTUAL_KEY}",
+        "headers": { "x-model-provider": "anthropic" }
+      }
+    },
+    "bifrost-gemini": {
+      "name": "Bifrost Gemini",
+      "api": "openai",
+      "options": {
+        "baseURL": "{env:BIFROST_BASE_URL}/openai/v1",
+        "apiKey": "{env:BIFROST_VIRTUAL_KEY}",
+        "headers": { "x-model-provider": "gemini" }
+      }
+    },
+    "bifrost-openrouter": {
+      "name": "Bifrost OpenRouter",
+      "api": "openai",
+      "options": {
+        "baseURL": "{env:BIFROST_BASE_URL}/openai/v1",
+        "apiKey": "{env:BIFROST_VIRTUAL_KEY}",
+        "headers": { "x-model-provider": "openrouter" }
+      }
+    }
+  }
+}
+```
+
+On `smed`, the verified model set excludes `deepseek/deepseek-v4-flash:free` because Bifrost rejected it for the fresh `smed` virtual key. All configured `smed` models were smoke-tested with `opencode run --format json -m <model> "Reply exactly: ok"`; Gemini and some OpenRouter models store the correct answer in the session export even when the CLI JSON stream omits a `text` event.
+
+OpenClaw is separate from `smed`. Its container is hosted on `docky-ct.happ.li` as `openclaw-openclaw-cli-1`, and its OpenClaw config already points directly at Bifrost with its own local key.
 
 ## Existing Machines
 

@@ -12,8 +12,9 @@ function run(cmd: string): string {
       timeout: 30_000,
       maxBuffer: 1024 * 1024,
     }).trim()
-  } catch (err: any) {
-    const msg = err.stderr?.trim() || err.message
+  } catch (err: unknown) {
+    const error = err as { stderr?: string; message?: string }
+    const msg = error.stderr?.trim() || error.message || String(err)
     return JSON.stringify({ error: msg })
   }
 }
@@ -90,9 +91,8 @@ export const summarize = tool({
     language: tool.schema.string().optional().describe("Two-letter language code for the summary output (e.g. EN, DE, FR). Defaults to 'EN'."),
   },
   async execute(args) {
-    const url = args.url || args.text
-    if (!url) {
-      return "Error: provide either 'url' or 'text'."
+    if ((args.url && args.text) || (!args.url && !args.text)) {
+      return "Error: provide exactly one of 'url' or 'text'."
     }
 
     const type = args.type ?? "summary"

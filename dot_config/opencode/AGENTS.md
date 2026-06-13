@@ -34,12 +34,14 @@
 
 ## Git Conventions
 
-- **Commit format**: `type(scope): description`
+- Follow the repository's existing commit and branch conventions when they are
+  documented or obvious from history.
+- If no repository convention exists, use `type(scope): description` for commits.
   - Types: `feat`, `fix`, `refactor`, `docs`, `test`, `chore`, `ci`, `perf`
   - Scope is optional but encouraged
   - Use imperative mood, lowercase, no trailing period
-- **Branch naming**: `type/short-description` (e.g., `feat/user-auth`,
-  `fix/null-pointer`)
+- If no repository convention exists, use `type/short-description` for branches
+  (e.g., `feat/user-auth`, `fix/null-pointer`).
 - **Commit discipline**:
   - One logical change per commit
   - Run `git status` after committing to verify
@@ -66,9 +68,12 @@
 
 ## Testing
 
-- Follow TDD: write tests first when implementing new features.
-- Run existing tests before committing to catch regressions.
-- Suggest test coverage for new code paths.
+- Add or update tests for new behavior and bug fixes when the project has a
+  relevant test pattern.
+- Use TDD when practical or explicitly requested.
+- Run focused checks after changes; run the broader test suite before committing
+  when feasible.
+- Report any tests or checks that could not be run.
 
 ## Security
 

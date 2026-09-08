@@ -28,9 +28,18 @@ keybinds {
 
 theme "catppuccin-macchiato"
 default_mode "normal"
+simplified_ui true
 scroll_buffer_size 100000
 session_serialization true
 osc8_hyperlinks true
+
+plugins {
+    zjstatus-hints location="file:~/.config/zellij/plugins/zjstatus-hints.wasm" {
+        max_length 80
+        overflow_str "..."
+        hide_in_base_mode false
+    }
+}
 
 ui {
     pane_frames {

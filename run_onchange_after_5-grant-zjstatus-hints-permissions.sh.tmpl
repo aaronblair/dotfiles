@@ -1,0 +1,23 @@
+{{- includeTemplate ".chezmoitemplates/profile-guard.tmpl" . -}}
+{{- if .installs_zellij -}}
+#!/bin/bash
+
+# Permission prompts do not fit in the plugin's one-row status pane.
+permissions_dir="${XDG_CACHE_HOME:-$HOME/.cache}/zellij"
+if [[ "$(uname)" == "Darwin" ]]; then
+    permissions_dir="$HOME/Library/Caches/org.Zellij-Contributors.Zellij"
+fi
+
+permissions_file="$permissions_dir/permissions.kdl"
+plugin_path="$HOME/.config/zellij/plugins/zjstatus-hints.wasm"
+
+mkdir -p "$permissions_dir"
+if ! grep -Fq "\"$plugin_path\"" "$permissions_file" 2> /dev/null; then
+    cat >> "$permissions_file" <<EOF
+"$plugin_path" {
+    ReadApplicationState
+    MessageAndLaunchOtherPlugins
+}
+EOF
+fi
+{{- end -}}

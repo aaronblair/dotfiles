@@ -1,0 +1,18 @@
+onboarding = false
+
+[keys]
+prefix = "ctrl+a"
+detach = "prefix+d"
+last_pane = "prefix+a"
+move_tab_previous = "prefix+shift+left"
+move_tab_next = "prefix+shift+right"
+
+[ui]
+agent_panel_sort = "priority"
+tab_bar_position = "bottom"
+pane_outer_borders = false
+pane_gaps = false
+tab_bar_right = [
+  { type = "zoom" },
+  { type = "hostname" },
+]

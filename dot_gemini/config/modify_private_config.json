@@ -1,0 +1,32 @@
+#!/bin/sh
+
+set -eu
+
+current=$(mktemp)
+trap 'rm -f "$current"' EXIT
+cat > "$current"
+
+if [ -s "$current" ] && jq -e '
+  .plugins["android-cli-plugin"].enabled == true and
+  .plugins["modern-web-guidance-plugin"].enabled == true and
+  .plugins.science.enabled == true and
+  .userSettings.browserJsExecutionPolicy == "BROWSER_JS_EXECUTION_POLICY_ALWAYS_ASK" and
+  .userSettings.themeMode == "THEME_MODE_INHERIT"
+' "$current" >/dev/null; then
+  cat "$current"
+  exit 0
+fi
+
+if [ ! -s "$current" ]; then
+  printf '{}\n' > "$current"
+fi
+
+jq '
+  .plugins = (.plugins // {}) |
+  .plugins["android-cli-plugin"].enabled = true |
+  .plugins["modern-web-guidance-plugin"].enabled = true |
+  .plugins.science.enabled = true |
+  .userSettings = (.userSettings // {}) |
+  .userSettings.browserJsExecutionPolicy = "BROWSER_JS_EXECUTION_POLICY_ALWAYS_ASK" |
+  .userSettings.themeMode = "THEME_MODE_INHERIT"
+' "$current"

@@ -1,0 +1,253 @@
+notify = ["{{ .chezmoi.homeDir }}/.codex/computer-use/Codex Computer Use.app/Contents/SharedSupport/SkyComputerUseClient.app/Contents/MacOS/SkyComputerUseClient", "turn-ended"]
+model = "gpt-6-astra"
+model_reasoning_effort = "high"
+
+[marketplaces.openai-bundled]
+source_type = "local"
+source = "{{ .chezmoi.homeDir }}/.codex/.tmp/bundled-marketplaces/openai-bundled"
+
+[marketplaces.openai-primary-runtime]
+source_type = "local"
+source = "{{ .chezmoi.homeDir }}/.cache/codex-runtimes/codex-primary-runtime/plugins/openai-primary-runtime"
+
+[plugins."visualize@openai-bundled"]
+enabled = true
+
+[plugins."documents@openai-primary-runtime"]
+enabled = true
+
+[plugins."pdf@openai-primary-runtime"]
+enabled = true
+
+[plugins."spreadsheets@openai-primary-runtime"]
+enabled = true
+
+[plugins."presentations@openai-primary-runtime"]
+enabled = true
+
+[plugins."template-creator@openai-primary-runtime"]
+enabled = true
+
+[plugins."google-calendar@openai-curated"]
+enabled = true
+
+[plugins."slack@openai-curated"]
+enabled = true
+
+[plugins."sites@openai-bundled"]
+enabled = true
+
+[plugins."computer-use@openai-bundled"]
+enabled = true
+
+[plugins."browser@openai-bundled"]
+enabled = true
+
+[plugins."codex-app-tools@openai-bundled"]
+enabled = true
+
+[plugins."unified-computer-use@openai-bundled"]
+enabled = true
+
+[plugins."chrome@openai-bundled"]
+enabled = true
+
+[features]
+js_repl = false
+
+[mcp_servers.node_repl]
+args = []
+command = "/Applications/ChatGPT.app/Contents/Resources/cua_node/bin/node_repl"
+startup_timeout_sec = 120
+
+[mcp_servers.node_repl.env]
+NODE_REPL_NATIVE_PIPE_CONNECT_TIMEOUT_MS = "1000"
+NODE_REPL_NODE_MODULE_DIRS = "/Applications/ChatGPT.app/Contents/Resources/cua_node/lib/node_modules"
+NODE_REPL_NODE_PATH = "/Applications/ChatGPT.app/Contents/Resources/cua_node/bin/node"
+NODE_REPL_TRUSTED_CODE_PATHS = "{{ .chezmoi.homeDir }}/.codex:/Applications/ChatGPT.app/Contents/Resources/cua_node/lib/node_modules"
+CODEX_HOME = "{{ .chezmoi.homeDir }}/.codex"
+BROWSER_USE_AVAILABLE_BACKENDS = "chrome,iab"
+BROWSER_USE_TINYSKY_ENABLED = "1"
+NODE_REPL_INSTRUCTIONS_USE_CASE_BROWSER = ""
+NODE_REPL_INSTRUCTIONS_USE_CASE_CHROME = ""
+NODE_REPL_INSTRUCTIONS_USE_CASE_COMPUTER_USE = ""
+BROWSER_USE_CODEX_APP_BUILD_FLAVOR = "prod"
+BROWSER_USE_CODEX_APP_VERSION = "26.908.40834"
+NODE_REPL_TRUSTED_SERVICES = '{"browser":"{{ .chezmoi.homeDir }}/.codex/plugins/cache/openai-bundled/browser/26.908.40834/scripts/browser-service.mjs","sky":"@oai/sky/service"}'
+SKY_CUA_SERVICE_PATH = "{{ .chezmoi.homeDir }}/.codex/computer-use/Codex Computer Use.app"
+CODEX_CLI_PATH = "/Applications/ChatGPT.app/Contents/Resources/codex"
+
+[mcp_servers.computer-use]
+command = "./Codex Computer Use.app/Contents/SharedSupport/SkyComputerUseClient.app/Contents/MacOS/SkyComputerUseClient"
+args = ["mcp"]
+cwd = "."
+enabled = false
+
+[desktop]
+conversationDetailMode = "STEPS_PROSE"
+ambient-suggestions-enabled = true
+followUpQueueMode = "queue"
+enabled-reasoning-efforts = ["low", "medium", "high", "xhigh", "max", "ultra"]
+show-context-window-usage = true
+realtimeVoiceScreenContextEnabled = true
+dictationDictionary = ["Peavey Mart", "Cenovus"]
+hotkey-window-projectless-default-enabled = true
+
+[projects."{{ .chezmoi.homeDir }}/Documents/Codex/2026-07-13/create-a-scheduled-task-called-weekday"]
+trust_level = "trusted"
+
+[projects."{{ .chezmoi.homeDir }}/Documents/Codex/2026-07-14/create-a-scheduled-task-called-weekday"]
+trust_level = "trusted"
+
+[projects."{{ .chezmoi.homeDir }}/Documents/Codex/2026-07-16/create-a-scheduled-task-called-weekday"]
+trust_level = "trusted"
+
+[projects."{{ .chezmoi.homeDir }}/Documents/Mall Website"]
+trust_level = "trusted"
+
+[projects."{{ .chezmoi.homeDir }}/Documents/Codex/2026-07-20/is"]
+trust_level = "trusted"
+
+[projects."{{ .chezmoi.homeDir }}/Documents/Codex/2026-07-20/sites-plugin-sites-openai-bundled-create"]
+trust_level = "trusted"
+
+[projects."{{ .chezmoi.homeDir }}/Documents/Codex/2026-07-20/gmail-plugin-gmail-openai-curated-remote"]
+trust_level = "trusted"
+
+[projects."{{ .chezmoi.homeDir }}/Documents/Codex/2026-07-20/new-chat"]
+trust_level = "trusted"
+
+[projects."{{ .chezmoi.homeDir }}/Documents/Codex/2026-07-20/gmail-plugin-gmail-openai-curated-remote-2"]
+trust_level = "trusted"
+
+[projects."{{ .chezmoi.homeDir }}/Documents/Codex/2026-07-20/su"]
+trust_level = "trusted"
+
+[projects."{{ .chezmoi.homeDir }}/Documents/Codex/2026-07-22/i-a"]
+trust_level = "trusted"
+
+[projects."{{ .chezmoi.homeDir }}/Documents/Codex/2026-07-22/janice-agreo"]
+trust_level = "trusted"
+
+[projects."{{ .chezmoi.homeDir }}/Documents/Codex/2026-07-22/what"]
+trust_level = "trusted"
+
+[projects."{{ .chezmoi.homeDir }}/Documents/Codex/2026-07-23/new-chat"]
+trust_level = "trusted"
+
+[projects."{{ .chezmoi.homeDir }}/Documents/Codex/2026-07-23/i-hav"]
+trust_level = "trusted"
+
+[projects."{{ .chezmoi.homeDir }}/Documents/Codex/2026-07-23/gma"]
+trust_level = "trusted"
+
+[projects."{{ .chezmoi.homeDir }}/Documents/Codex/2026-07-23/re"]
+trust_level = "trusted"
+
+[projects."{{ .chezmoi.homeDir }}/Documents/Codex/2026-07-24/is-t"]
+trust_level = "trusted"
+
+[projects."{{ .chezmoi.homeDir }}/Documents/Codex/2026-07-24/w"]
+trust_level = "trusted"
+
+[projects."{{ .chezmoi.homeDir }}/Documents/Codex/2026-07-24/in"]
+trust_level = "trusted"
+
+[projects."{{ .chezmoi.homeDir }}/Documents/Codex/2026-07-24/w-2"]
+trust_level = "trusted"
+
+[projects."{{ .chezmoi.homeDir }}/Documents/Codex/2026-07-24/i-would-like-to-draft-an"]
+trust_level = "trusted"
+
+[projects."{{ .chezmoi.homeDir }}/Documents/Codex/2026-07-25/wh"]
+trust_level = "trusted"
+
+[projects."{{ .chezmoi.homeDir }}/Documents/Codex/2026-07-26/wha"]
+trust_level = "trusted"
+
+[projects."{{ .chezmoi.homeDir }}/Documents/Codex/2026-07-27/wha"]
+trust_level = "trusted"
+
+[projects."{{ .chezmoi.homeDir }}/Documents/Codex/2026-07-27/what"]
+trust_level = "trusted"
+
+[projects."{{ .chezmoi.homeDir }}/Documents/Codex/2026-07-27/wh"]
+trust_level = "trusted"
+
+[projects."{{ .chezmoi.homeDir }}/Documents/Codex/2026-07-27/s"]
+trust_level = "trusted"
+
+[projects."{{ .chezmoi.homeDir }}/Documents/Codex/2026-07-28/bac"]
+trust_level = "trusted"
+
+[projects."{{ .chezmoi.homeDir }}/Documents/Codex/2026-07-29/h"]
+trust_level = "trusted"
+
+[projects."{{ .chezmoi.homeDir }}/Documents/Codex/2026-07-30/ho"]
+trust_level = "trusted"
+
+[projects."{{ .chezmoi.homeDir }}/Documents/Codex/2026-07-30/sho"]
+trust_level = "trusted"
+
+[projects."{{ .chezmoi.homeDir }}/Documents/Codex/2026-07-30/goo"]
+trust_level = "trusted"
+
+[projects."{{ .chezmoi.homeDir }}/Documents/Codex/2026-07-30/realtime-voice-chat"]
+trust_level = "trusted"
+
+[projects."{{ .chezmoi.homeDir }}/Documents/Mall Map"]
+trust_level = "trusted"
+
+[projects."{{ .chezmoi.homeDir }}/Documents/Codex/2026-07-30/ca"]
+trust_level = "trusted"
+
+[projects."{{ .chezmoi.homeDir }}/Documents/Codex/2026-07-31/wha"]
+trust_level = "trusted"
+
+[projects."{{ .chezmoi.homeDir }}/Documents/Codex/2026-07-31/what-are-the-differences-with"]
+trust_level = "trusted"
+
+[projects."{{ .chezmoi.homeDir }}/Documents/Codex/2026-08-01/w"]
+trust_level = "trusted"
+
+[projects."{{ .chezmoi.homeDir }}/Documents/Codex/2026-08-02/is-there-any-reason-to-not"]
+trust_level = "trusted"
+
+[projects."{{ .chezmoi.homeDir }}/Documents/obsidian_vault"]
+trust_level = "trusted"
+
+[projects."{{ .chezmoi.homeDir }}/.codex/.chatgpt-projects/g-p-6a70e46783d08191a79f7e06f5934295"]
+trust_level = "trusted"
+
+[projects."{{ .chezmoi.homeDir }}/Documents/Codex/2026-08-06/from-the-attached-report-please-pull"]
+trust_level = "trusted"
+
+[projects."{{ .chezmoi.homeDir }}/Documents/Codex/2026-08-06/from-the-attached-report-please-pull-2"]
+trust_level = "trusted"
+
+[projects."{{ .chezmoi.homeDir }}/Documents/Codex/2026-08-07/how-does-bullfrog-power-stack-up"]
+trust_level = "trusted"
+
+[projects."{{ .chezmoi.homeDir }}/Documents/Codex/2026-08-17/realtime-voice-chat"]
+trust_level = "trusted"
+
+[projects."{{ .chezmoi.homeDir }}/Documents/Codex/2026-08-29/what-is-a-torbie"]
+trust_level = "trusted"
+
+[projects."{{ .chezmoi.homeDir }}/Documents/Codex/2026-09-09/geometric-animal-silhouette-the-allan-peters"]
+trust_level = "trusted"
+
+[projects."{{ .chezmoi.homeDir }}/.codex/.chatgpt-projects/g-p-6aa2363b89f88191bf14e4cad910ed06"]
+trust_level = "trusted"
+
+[projects."{{ .chezmoi.homeDir }}/.codex/.chatgpt-projects/g-p-6aa20687a89c8191b97abc003214e174"]
+trust_level = "trusted"
+
+[projects."{{ .chezmoi.homeDir }}/Documents/Codex/2026-09-11/fireworks-ai-vs-ollama"]
+trust_level = "trusted"
+
+[projects."{{ .chezmoi.homeDir }}/Documents/Codex/2026-09-11/realtime-voice-chat"]
+trust_level = "trusted"
+
+[shell_environment_policy.set]
+NODE_REPL_TRUSTED_BROWSER_CLIENT_SHA256S = "8e86beb821b9afc846211798e0113bd4b9e79312dfcd135eb447bdb154f64071"

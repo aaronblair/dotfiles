@@ -1,0 +1,25 @@
+{
+  "agentMode": "accept-edits",
+  "notifications": true,
+  "permissions": {
+    "allow": [
+      "command(git)"
+    ],
+    "deny": [
+      "command(sudo)",
+      "command(regex:rm -rf .*)"
+    ]
+  },
+  "statusLine": {
+    "type": "command",
+    "command": "~/.gemini/antigravity-cli/statusline.sh",
+    "enabled": true
+  },
+  "toolPermission": "always-proceed",
+  "trustedWorkspaces": [
+    "/private/var/folders/n4/20mh9x4d4k5ff2tzg2sx5rk00000gn/T/opencode/agy-skippy",
+    "{{ .chezmoi.homeDir }}/Documents/bisonpath_brand",
+    "{{ .chezmoi.homeDir }}/Documents/happli",
+    "{{ .chezmoi.homeDir }}/Documents/happ"
+  ]
+}

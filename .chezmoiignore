@@ -37,6 +37,14 @@ run_*linux*
 {{- end }}
 
 {{- if not .manages_opencode }}
+.claude
+.claude/**
+.codex
+.codex/**
+.gemini
+.gemini/**
+.config/agent-policy
+.config/agent-policy/**
 .config/opencode
 .config/opencode/**
 {{- end }}

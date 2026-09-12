@@ -57,6 +57,11 @@ This is a Chezmoi source repo for macOS and Linux dotfiles. Edit source files he
 - Lua formatting convention for Neovim is in `dot_config/nvim/stylua.toml`: 2-space indents and 120 columns.
 - `run_once_after_4-setup-nvim.sh.tmpl` bootstraps Neovim only for `macos`, `dev`, and `ai`, ignoring failures so bootstrap can continue.
 - OpenCode config is managed under `dot_config/opencode`; its config denies tool access to `~/.config/env.d/**` because that directory is for local secrets.
+- `dot_config/agent-policy/AGENTS.md` is the canonical global agent policy; Chezmoi-managed `symlink_` entries expose it to OpenCode, Claude, Codex, and Gemini using relative links.
+- Selected Claude, Codex, Gemini, and Antigravity CLI settings and status-line scripts are managed for profiles where `.manages_opencode` is true.
+- `dot_gemini/config/modify_private_config.json` manages only portable Antigravity plugin, browser-policy, and theme values; preserve unknown application fields and both remote-control hostname fields.
+- `dot_gemini/config/mcp_config.json` is the portable global Antigravity MCP configuration.
+- Herdr-generated OpenCode integration plugins and Antigravity hook files are intentionally unmanaged; do not copy them into the source state because Herdr overwrites them.
 - `dot_zshenv.tmpl` loads `~/.config/env.d/*.zsh` on all platforms; keep it quiet because zsh reads it for every invocation.
 - `dot_config/zsh/functions/bifrost-vkey.zsh` provides `bifrost_vkey`; `dev` defaults to copying non-secret governance config from Bifrost virtual key `openclaw-main`.
 - Do not read, print, edit, stage, or commit files under `~/.config/env.d/`; they are intentionally unmanaged local secret stores.

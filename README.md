@@ -22,6 +22,7 @@ This repo uses `CHEZMOI_PROFILE` to decide what to install and manage.
 - **Terminal**: tmux everywhere, Zellij for `macos`, `dev`, and `ai`
 - **CLI Tools**: eza, fzf, zoxide, ripgrep, fd, htop, jq, rsync
 - **OpenCode**: managed under `~/.config/opencode` for `macos`, `dev`, and `ai`
+- **Agent Configs**: shared policy plus selected Claude, Codex, Gemini, and Antigravity CLI settings for `macos`, `dev`, and `ai`
 
 ## Infra Handoff
 
@@ -137,8 +138,20 @@ This is mainly used to clean up trust-sensitive state when moving away from `dev
 - `~/.config/gh/config.yml`
 - `~/.config/gh/hosts.yml`
 - `~/.config/opencode/`
+- `~/.config/agent-policy/`
+- selected managed files under `~/.claude`, `~/.codex`, and `~/.gemini`
 
-## OpenCode
+## Agent Configurations
+
+- canonical global instructions live at `~/.config/agent-policy/AGENTS.md`
+- Chezmoi creates relative policy symlinks for OpenCode, Claude, Codex, and Gemini
+- Claude and Antigravity CLI status-line scripts are managed as executable files
+- selected Claude, Codex, Gemini, and Antigravity CLI preferences are managed only for `macos`, `dev`, and `ai`
+- `~/.gemini/config/config.json` is partially managed: portable plugin, browser-policy, and theme values are enforced while Antigravity-owned fields and machine-specific remote-control hostnames are preserved
+- `~/.gemini/config/mcp_config.json` is managed as a complete portable MCP configuration
+- Herdr-generated OpenCode plugins and Antigravity hooks remain unmanaged because Herdr overwrites them
+
+### OpenCode
 
 - managed config lives in `~/.config/opencode`
 - enabled by default for `macos`, `dev`, and `ai`

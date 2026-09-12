@@ -5,6 +5,7 @@
   "model": "openai/gpt-5.6-terra",
   "small_model": "openai/gpt-5.6-luna",
   {{- end }}
+  "share": "disabled",
   {{- if $hasBifrost }}
   "provider": {
     "bifrost-openai": {
@@ -285,7 +286,7 @@
         }
       }
     },
-    "xai": {
+    "bifrost-xai": {
       "name": "Bifrost xAI",
       "api": "openai",
       "options": {
@@ -294,14 +295,14 @@
         "headers": { "x-model-provider": "xai" }
       },
       "models": {
-        "grok-4.5": {
-          "id": "xai/grok-4.5",
-          "name": "Grok 4.5",
+        "grok-4.6": {
+          "id": "xai/grok-4.6",
+          "name": "Grok 4.6",
           "family": "grok",
           "tool_call": true,
-          "reasoning": false,
-          "attachment": false,
-          "limit": { "context": 256000, "output": 32768 }
+          "reasoning": true,
+          "attachment": true,
+          "limit": { "context": 500000, "output": 32768 }
         }
       }
     },
@@ -417,5 +418,8 @@
       },
       "enabled": {{ if env "CONTEXT7_API_KEY" }}true{{ else }}false{{ end }}
     }
-  }
+  },
+  "plugin": [
+    "@slkiser/opencode-quota"
+  ]
 }

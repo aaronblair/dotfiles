@@ -1,13 +1,13 @@
 import { tool } from "@opencode-ai/plugin"
-import { execSync } from "node:child_process"
+import { execFileSync } from "node:child_process"
 
 // ---------------------------------------------------------------------------
 // Helpers
 // ---------------------------------------------------------------------------
 
-function run(cmd: string): string {
+function run(args: string[]): string {
   try {
-    return execSync(cmd, {
+    return execFileSync("kagi-ken-cli", args, {
       encoding: "utf-8",
       timeout: 30_000,
       maxBuffer: 1024 * 1024,
@@ -22,7 +22,8 @@ function run(cmd: string): string {
 /** Strip noise from search results so the LLM sees fewer tokens. */
 function compactSearchResults(raw: string): string {
   try {
-    const data = JSON.parse(raw)
+    const parsed = JSON.parse(raw)
+    const data = Array.isArray(parsed) ? parsed : parsed?.data
     if (!Array.isArray(data)) return raw
 
     const results: string[] = []
@@ -45,11 +46,6 @@ function compactSearchResults(raw: string): string {
   }
 }
 
-function escapeShellArg(s: string | undefined): string {
-  if (s == null) return "''"
-  return `'${s.replace(/'/g, "'\\''")}'`
-}
-
 // ---------------------------------------------------------------------------
 // Tools
 // ---------------------------------------------------------------------------
@@ -70,15 +66,11 @@ export const search = tool({
       .describe("Max results to return (1-20). Defaults to 10. Use fewer for simple lookups."),
   },
   async execute(args) {
-    const parts = [`kagi-ken-cli search ${escapeShellArg(args.query)}`]
-    const token = process.env.KAGI_SESSION_TOKEN
-    if (token) {
-      parts.push(`--token ${escapeShellArg(token)}`)
-    }
+    const parts = ["search", args.query]
     if (args.limit && args.limit !== 10) {
-      parts.push(`--limit ${args.limit}`)
+      parts.push("--limit", String(args.limit))
     }
-    const raw = run(parts.join(" "))
+    const raw = run(parts)
     return compactSearchResults(raw)
   },
 })
@@ -101,22 +93,18 @@ export const summarize = tool({
 
     const type = args.type ?? "summary"
     const language = args.language ?? "EN"
-    const token = process.env.KAGI_SESSION_TOKEN
 
-    const parts = ["kagi-ken-cli summarize"]
+    const parts = ["summarize"]
 
     if (args.url) {
-      parts.push(`--url ${escapeShellArg(args.url)}`)
+      parts.push("--url", args.url)
     } else if (args.text) {
-      parts.push(`--text ${escapeShellArg(args.text)}`)
+      parts.push("--text", args.text)
     }
 
-    parts.push(`--type ${escapeShellArg(type)}`)
-    parts.push(`--language ${escapeShellArg(language)}`)
-    if (token) {
-      parts.push(`--token ${escapeShellArg(token)}`)
-    }
+    parts.push("--type", type)
+    parts.push("--language", language)
 
-    return run(parts.join(" "))
+    return run(parts)
   },
 })

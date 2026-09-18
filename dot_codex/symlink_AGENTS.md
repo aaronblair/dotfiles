@@ -1,1 +1,1 @@
-../.config/agent-policy/AGENTS.md
+/Users/aaron/.config/agent-policy/AGENTS.md

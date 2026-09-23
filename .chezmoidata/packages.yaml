@@ -4,6 +4,7 @@ packages:
       apt:
         server:
           - bash
+          - build-essential
           - ca-certificates
           - curl
           - eza
@@ -38,6 +39,7 @@ packages:
       apk:
         server:
           - bash
+          - build-base
           - ca-certificates
           - curl
           - eza

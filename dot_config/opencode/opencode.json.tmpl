@@ -233,6 +233,15 @@
         "headers": { "x-model-provider": "gemini" }
       },
       "models": {
+        "gemini-2.5-flash-lite": {
+          "name": "Gemini 2.5 Flash-Lite",
+          "family": "gemini",
+          "tool_call": true,
+          "reasoning": true,
+          "attachment": true,
+          "cost": { "input": 0.1, "output": 0.4 },
+          "limit": { "context": 1114112, "input": 1048576, "output": 65536 }
+        },
         "gemini-3.8-flash": {
           "name": "Gemini 3.8 Flash",
           "family": "gemini",

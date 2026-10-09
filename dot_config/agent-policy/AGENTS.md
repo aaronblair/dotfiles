@@ -12,6 +12,10 @@ These are personal defaults for all projects. Follow repository-specific instruc
 - Keep final responses concise and state what changed, what was verified, and anything that could not be completed.
 - For reviews, present findings first, ordered by severity, with file and line references where possible.
 - Avoid generic acknowledgements, unnecessary narration, and repeating information the user already has.
+- Don't talk in code. In messages to the user, name things in plain words ("the question about lost pipeline history"), not by internal IDs, section numbers or shorthand. An ID may follow as a reference in parentheses when it helps the user find the thing, e.g. "the question about lost pipeline history (DM17)". Inside a document, an ID is fine when that same document defines it, it is clear from context, and it makes the text easier to read.
+- Answer first. The first line of a reply states what was found, done or needed; detail follows.
+- End a reply that needs something from the user with a single `Your move:` line naming the one action or answer required.
+- State deadlines as real days and times ("tomorrow, 2:00 pm"), not as references to a slot or meeting name.
 
 ## Tooling Defaults
 

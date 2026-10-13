@@ -1,0 +1,31 @@
+#!/bin/sh
+
+set -eu
+
+current=$(mktemp)
+trap 'rm -f "$current"' EXIT
+cat > "$current"
+
+if [ -s "$current" ] && jq -e '
+  .model == "opus[1m]" and
+  .statusLine.type == "command" and
+  .statusLine.command == "~/.claude/statusline.sh" and
+  .permissions.defaultMode == "auto" and
+  .modelSettings["claude-opus-5-5"].effortLevel == "high"
+' "$current" >/dev/null; then
+  cat "$current"
+  exit 0
+fi
+
+if [ ! -s "$current" ]; then
+  printf '{}\n' > "$current"
+fi
+
+# Hooks and other application-owned fields remain local and unmanaged.
+jq '
+  .model = "opus[1m]" |
+  .statusLine.type = "command" |
+  .statusLine.command = "~/.claude/statusline.sh" |
+  .permissions.defaultMode = "auto" |
+  .modelSettings["claude-opus-5-5"].effortLevel = "high"
+' "$current"

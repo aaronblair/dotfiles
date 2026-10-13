@@ -19,7 +19,7 @@ fi
 
 {{- if or .is_macos .is_dev .is_ai }}
 export PNPM_HOME="${PNPM_HOME:-$HOME/.local/share/pnpm}"
-export PATH="$PNPM_HOME:$PATH"
+export PATH="$PNPM_HOME/bin:$PNPM_HOME:$PATH"
 {{- end }}
 {{- if .is_macos }}
 export PATH="$HOME/.local/bin:$PATH"
@@ -47,18 +47,48 @@ ocu() {
     return 1
   fi
 
-  if command -v brew > /dev/null 2>&1 && brew list --versions opencode > /dev/null 2>&1; then
-    if [[ -n "$(brew outdated opencode 2> /dev/null)" ]]; then
-      print 'Updating opencode via Homebrew...'
-      brew upgrade opencode
-    else
+  local formula='anomalyco/tap/opencode-v2'
+  local use_brew=false outdated before after
+  before=$(opencode --version) || return
+
+  if command -v brew > /dev/null 2>&1 && brew list --versions "$formula" > /dev/null 2>&1; then
+    use_brew=true
+    brew update || return
+    outdated=$(brew outdated "$formula") || return
+    if [[ -z "$outdated" ]]; then
       print 'opencode is already up to date'
+      return 0
     fi
-    return
   fi
 
-  print 'Updating opencode via opencode upgrade...'
-  opencode upgrade
+  print 'Finish active work and quit OpenCode clients in all Herdr workspaces first.'
+  print 'After upgrading, this will restart the shared OpenCode service.'
+  if [[ ! -t 0 ]]; then
+    print 'Run ocu interactively to confirm the update and service restart.'
+    return 1
+  fi
+  if ! read -q '?Continue? [y/N] '; then
+    print
+    return 1
+  fi
+  print
+
+  if [[ "$use_brew" == true ]]; then
+    print 'Updating opencode V2 via Homebrew...'
+    brew upgrade "$formula" || return
+  else
+    print 'Updating opencode via opencode upgrade...'
+    opencode upgrade || return
+  fi
+
+  after=$(opencode --version) || return
+  if [[ "$after" != "$before" ]]; then
+    opencode service restart || return
+    print "$after"
+    print 'Reopen OpenCode in your Herdr panes and resume your conversations.'
+  else
+    print 'OpenCode version unchanged; shared service was not restarted.'
+  fi
 }
 {{- end }}
 

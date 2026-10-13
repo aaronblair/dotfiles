@@ -1,0 +1,13 @@
+{
+  "name": "local-opencode-kagi-v2",
+  "private": true,
+  "type": "module",
+  "packageManager": "pnpm@11.6.0",
+  "exports": "./index.ts",
+  "scripts": {
+    "test": "node --experimental-strip-types --test ../../lib/kagi.test.mjs index.test.mjs"
+  },
+  "dependencies": {
+    "@opencode/plugin": "2.0.28"
+  }
+}

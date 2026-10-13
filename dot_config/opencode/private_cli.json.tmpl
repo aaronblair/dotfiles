@@ -1,0 +1,28 @@
+{
+  "$schema": "https://opencode.ai/v2/cli.json",
+  "theme": {
+    "name": "system"
+  },
+  "scroll": {
+    "acceleration": true
+  },
+  "attention": {
+    "enabled": true,
+    "notifications": true,
+    "sound": false
+  },
+  "diffs": {
+    "wrap": "word"
+  },
+  "session": {
+    "sidebar": "hide",
+    "scrollbar": false,
+    "thinking": "show"
+  },
+  "animations": true,
+  "mouse": true,
+  "plugins": [
+    "@slkiser/opencode-quota@5"{{ if stat (joinPath .chezmoi.homeDir ".config/opencode/herdr-opencode") }},
+    "./herdr-opencode"{{ end }}
+  ]
+}

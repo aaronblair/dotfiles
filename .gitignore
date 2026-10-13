@@ -1,5 +1,6 @@
 # Local OpenCode/plugin state
 .opencode/
+dot_config/opencode/plugins/kagi/node_modules/
 
 # Editor/IDE
 .idea/

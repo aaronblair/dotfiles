@@ -5,6 +5,8 @@ AGENTS.md
 prd.md
 .opencode/
 .gitignore
+.config/opencode/plugins/kagi/node_modules/
+.config/opencode/plugins/kagi/node_modules/**
 Users/
 Users/**
 

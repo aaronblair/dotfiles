@@ -1,0 +1,36 @@
+{
+  "enabledProviders": [
+    "openai",
+    "openrouter",
+    "deepseek",
+    "xai",
+    "ollama-cloud",
+    "opencode-go"
+  ],
+  "onlyCurrentModel": false,
+  "formatStyle": "allWindows",
+  "percentDisplayMode": "used",
+  "percentLabelStyle": "bare",
+  "resetTimeSpaced": true,
+  "accountingDetail": "summary",
+  "tuiCommandDisplay": "inline",
+  "tuiSidebarPanel": {
+    "enabled": true,
+    "opencodeGoPreferredWindow": "rolling"
+  },
+  "enableToast": false,
+  "resetNotifications": {
+    "enabled": false,
+    "windows": ["weekly"]
+  },
+  "tuiCompactStatus": {
+    "enabled": false
+  },
+  "tuiPromptBar": {
+    "enabled": false
+  },
+  "maintainerAnnouncements": {
+    "enabled": false,
+    "home": false
+  }
+}

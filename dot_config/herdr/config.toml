@@ -16,3 +16,4 @@ tab_bar_right = [
   { type = "zoom" },
   { type = "hostname" },
 ]
+status_indicators = "symbols"

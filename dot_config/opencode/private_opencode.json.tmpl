@@ -7,6 +7,29 @@
   {{- end }}
   "share": "disabled",
   {{- if $hasBifrost }}
+  "providers": {
+    "bifrost-gemini": {
+      "models": {
+        "gemini-4-argon": {
+          "name": "Gemini 4 Argon",
+          "family": "gemini",
+          "package": "@opencode/ai/providers/openai-compatible",
+          "settings": {
+            "baseURL": "{env:BIFROST_BASE_URL}/v1",
+            "apiKey": "{env:BIFROST_VIRTUAL_KEY}"
+          },
+          "headers": { "x-model-provider": "gemini" },
+          "capabilities": {
+            "tools": true,
+            "input": ["text", "image", "audio", "video", "pdf"],
+            "output": ["text"]
+          },
+          "cost": { "input": 2, "output": 10, "cache_read": 0.1 },
+          "limit": { "context": 1048576, "output": 65536 }
+        }
+      }
+    }
+  },
   "provider": {
     "bifrost-openai": {
       "name": "Bifrost OpenAI",
@@ -451,16 +474,22 @@
     }
   },
   "mcp": {
-    "context7": {
-      "type": "remote",
-      "url": "https://mcp.context7.com/mcp",
-      "headers": {
-        "CONTEXT7_API_KEY": "{env:CONTEXT7_API_KEY}"
-      },
-      "enabled": {{ if env "CONTEXT7_API_KEY" }}true{{ else }}false{{ end }}
+    "servers": {
+      "donsetch": {
+        "type": "local",
+        "command": [
+          "{{ if .is_macos }}/opt/homebrew/bin/donsetch{{ else }}donsetch{{ end }}",
+          "mcp",
+          "--supervised"
+        ]
+      }
     }
   },
   "plugin": [
     "@slkiser/opencode-quota@5"
+  ],
+  "plugins": [
+    "-kagi",
+    "@upstash/context7-opencode"
   ]
 }

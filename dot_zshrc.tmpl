@@ -42,6 +42,74 @@ alias ocs='opencode serve --hostname 0.0.0.0 --port 4096'
 
 {{- if .manages_opencode }}
 ocu() {
+{{- if .is_macos }}
+  if ! command -v brew > /dev/null 2>&1; then
+    print 'ocu requires Homebrew to update OpenCode and DonSeTch.'
+    return 1
+  fi
+
+  local -a formulae=(anomalyco/tap/opencode-v2 dondai44423/donsetch/donsetch)
+  local formula before after upgrade_result=0
+  for formula in "${formulae[@]}"; do
+    if ! brew list --versions "$formula" > /dev/null 2>&1; then
+      print "ocu requires an existing Homebrew installation of $formula."
+      return 1
+    fi
+  done
+  before=$(brew list --versions "${formulae[@]}") || return
+
+  print 'Finish active work and quit OpenCode clients in all Herdr workspaces first.'
+  print 'This updates OpenCode and DonSeTch, then restarts the shared service if either changes.'
+  if [[ ! -t 0 ]]; then
+    print 'Run ocu interactively to confirm the update and service restart.'
+    return 1
+  fi
+  if ! read -q '?Continue? [y/N] '; then
+    print
+    return 1
+  fi
+  print
+
+  print 'Updating OpenCode V2 and DonSeTch via Homebrew...'
+  brew update || return
+  # Load core API metadata before Homebrew's linkage sandbox needs it.
+  # ripgrep is an OpenCode dependency; this queries metadata, not an install.
+  brew info --json=v2 ripgrep > /dev/null || return
+  # brew outdated exits 1 when a named formula is outdated; upgrade handles no-ops.
+  brew upgrade "${formulae[@]}" || upgrade_result=$?
+  rehash
+
+  if ! after=$(brew list --versions "${formulae[@]}"); then
+    print 'Could not verify installed versions after the upgrade attempt.'
+    print 'The shared service was not restarted. Check Homebrew output before retrying.'
+    return 1
+  fi
+  print -r -- "$after"
+  if (( upgrade_result != 0 )); then
+    print "Homebrew reported an upgrade failure (exit $upgrade_result); some packages may have updated."
+    if [[ "$after" != "$before" ]]; then
+      print 'Installed versions changed, but the shared service was not restarted.'
+    else
+      print 'Installed versions are unchanged; the shared service was not restarted.'
+    fi
+    print 'Resolve the Homebrew error, then check:'
+    print '  brew linkage --test anomalyco/tap/opencode-v2 dondai44423/donsetch/donsetch'
+    print '  donsetch doctor'
+    print 'After checks pass and active work is finished, run: opencode service restart'
+    return "$upgrade_result"
+  fi
+  if ! brew linkage --test "${formulae[@]}"; then
+    print 'Library linkage checks failed; the shared service was not restarted.'
+    print 'Resolve the linkage errors before restarting OpenCode.'
+    return 1
+  fi
+  if [[ "$after" != "$before" ]]; then
+    opencode service restart || return
+    print 'Reopen OpenCode in your Herdr panes and resume your conversations.'
+  else
+    print 'OpenCode and DonSeTch are unchanged; shared service was not restarted.'
+  fi
+{{- else }}
   if ! command -v opencode > /dev/null 2>&1; then
     print 'opencode is not installed'
     return 1
@@ -89,6 +157,7 @@ ocu() {
   else
     print 'OpenCode version unchanged; shared service was not restarted.'
   fi
+{{- end }}
 }
 {{- end }}
 

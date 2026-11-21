@@ -7,7 +7,7 @@ trap 'rm -f "$current"' EXIT
 cat > "$current"
 
 if [ -s "$current" ] && jq -e '
-  .model == "opus[1m]" and
+  .model == "opus" and
   .statusLine.type == "command" and
   .statusLine.command == "~/.claude/statusline.sh" and
   .permissions.defaultMode == "auto" and
@@ -23,7 +23,7 @@ fi
 
 # Hooks and other application-owned fields remain local and unmanaged.
 jq '
-  .model = "opus[1m]" |
+  .model = "opus" |
   .statusLine.type = "command" |
   .statusLine.command = "~/.claude/statusline.sh" |
   .permissions.defaultMode = "auto" |

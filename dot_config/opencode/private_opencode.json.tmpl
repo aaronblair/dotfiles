@@ -2,14 +2,347 @@
 {
   "$schema": "https://opencode.ai/config.json",
   {{- if $hasBifrost }}
-  "model": "openai/gpt-5.6-terra",
+  "model": "openai/gpt-6.2-sol",
   "small_model": "openai/gpt-5.6-luna",
   {{- end }}
   "share": "disabled",
   {{- if $hasBifrost }}
   "providers": {
+    "bifrost-anthropic": {
+      "name": "Bifrost Anthropic",
+      "package": "@opencode/ai/providers/openai-compatible",
+      "settings": {
+        "baseURL": "{env:BIFROST_BASE_URL}/v1",
+        "apiKey": "{env:BIFROST_VIRTUAL_KEY}"
+      },
+      "headers": {
+        "x-model-provider": "anthropic"
+      },
+      "models": {
+        "claude-opus-5-5": {
+          "name": "Claude Opus 5.5",
+          "family": "claude",
+          "capabilities": {
+            "tools": true,
+            "reasoning": {
+              "supported": true
+            },
+            "input": [
+              "text",
+              "image"
+            ],
+            "output": [
+              "text"
+            ]
+          },
+          "limit": {
+            "context": 1000000,
+            "output": 128000
+          }
+        },
+        "claude-fable-5-1": {
+          "name": "Claude Fable 5.1",
+          "family": "claude",
+          "capabilities": {
+            "tools": true,
+            "reasoning": {
+              "supported": true
+            },
+            "input": [
+              "text",
+              "image"
+            ],
+            "output": [
+              "text"
+            ]
+          },
+          "limit": {
+            "context": 1000000,
+            "output": 32768
+          }
+        },
+        "claude-sonnet-5": {
+          "name": "Claude Sonnet 5",
+          "family": "claude",
+          "capabilities": {
+            "tools": true,
+            "reasoning": {
+              "supported": true
+            },
+            "input": [
+              "text",
+              "image"
+            ],
+            "output": [
+              "text"
+            ]
+          },
+          "limit": {
+            "context": 1000000,
+            "output": 32768
+          }
+        },
+        "claude-haiku-4-5": {
+          "modelID": "anthropic/claude-haiku-4-5",
+          "name": "Claude Haiku 4.5",
+          "family": "claude",
+          "capabilities": {
+            "tools": true,
+            "reasoning": {
+              "supported": true
+            },
+            "input": [
+              "text",
+              "image"
+            ],
+            "output": [
+              "text"
+            ]
+          },
+          "cost": {
+            "input": 1,
+            "output": 5,
+            "cache": {
+              "read": 0.1,
+              "write": 1.25
+            }
+          },
+          "limit": {
+            "context": 200000,
+            "output": 64000
+          }
+        }
+      }
+    },
+    "bifrost-meta": {
+      "name": "Bifrost Meta",
+      "package": "@opencode/ai/providers/openai-compatible",
+      "settings": {
+        "baseURL": "{env:BIFROST_BASE_URL}/v1",
+        "apiKey": "{env:BIFROST_VIRTUAL_KEY}"
+      },
+      "models": {
+        "muse-wonder-1.0": {
+          "modelID": "meta/muse-wonder-1.0",
+          "name": "Muse Wonder 1.0",
+          "family": "muse",
+          "capabilities": {
+            "tools": true,
+            "input": [
+              "text"
+            ],
+            "output": [
+              "text"
+            ]
+          },
+          "cost": {
+            "input": 4,
+            "output": 20,
+            "cache": {
+              "read": 0.2
+            }
+          },
+          "limit": {
+            "context": 1048576,
+            "output": 131072
+          }
+        }
+      }
+    },
+    "bifrost-xai": {
+      "name": "Bifrost xAI",
+      "package": "@opencode/ai/providers/openai-compatible",
+      "settings": {
+        "baseURL": "{env:BIFROST_BASE_URL}/v1",
+        "apiKey": "{env:BIFROST_VIRTUAL_KEY}"
+      },
+      "models": {
+        "grok-4.7": {
+          "modelID": "xai/grok-4.7",
+          "name": "Grok 4.7",
+          "family": "grok",
+          "capabilities": {
+            "tools": true,
+            "input": [
+              "text"
+            ],
+            "output": [
+              "text"
+            ]
+          },
+          "cost": {
+            "input": 2,
+            "output": 6,
+            "cache": {
+              "read": 0.5
+            }
+          },
+          "limit": {
+            "context": 500000,
+            "output": 32768
+          }
+        },
+        "grok-4.6": {
+          "modelID": "xai/grok-4.6",
+          "name": "Grok 4.6",
+          "family": "grok",
+          "capabilities": {
+            "tools": true,
+            "reasoning": {
+              "supported": true
+            },
+            "input": [
+              "text",
+              "image"
+            ],
+            "output": [
+              "text"
+            ]
+          },
+          "limit": {
+            "context": 500000,
+            "output": 32768
+          }
+        }
+      }
+    },
     "bifrost-gemini": {
       "models": {
+        "gemini-4-neon": {
+          "name": "Gemini 4 Neon",
+          "family": "gemini",
+          "package": "@opencode/ai/providers/openai-compatible",
+          "settings": {
+            "baseURL": "{env:BIFROST_BASE_URL}/v1",
+            "apiKey": "{env:BIFROST_VIRTUAL_KEY}"
+          },
+          "headers": {
+            "x-model-provider": "gemini"
+          },
+          "capabilities": {
+            "tools": true,
+            "temperature": false,
+            "reasoning": {
+              "supported": true,
+              "effort": [
+                "low",
+                "medium",
+                "high",
+                "xhigh"
+              ]
+            },
+            "input": [
+              "text",
+              "image",
+              "audio",
+              "video",
+              "pdf"
+            ],
+            "output": [
+              "text"
+            ]
+          },
+          "cost": {
+            "input": 3,
+            "output": 15,
+            "cache": {
+              "read": 0.15
+            }
+          },
+          "limit": {
+            "context": 1048576,
+            "output": 65536
+          }
+        },
+        "gemini-4-carbon": {
+          "name": "Gemini 4 Carbon",
+          "family": "gemini",
+          "package": "@opencode/ai/providers/openai-compatible",
+          "settings": {
+            "baseURL": "{env:BIFROST_BASE_URL}/v1",
+            "apiKey": "{env:BIFROST_VIRTUAL_KEY}"
+          },
+          "headers": {
+            "x-model-provider": "gemini"
+          },
+          "capabilities": {
+            "tools": true,
+            "reasoning": {
+              "supported": true,
+              "effort": [
+                "low",
+                "medium",
+                "high"
+              ]
+            },
+            "input": [
+              "text",
+              "image",
+              "audio",
+              "video",
+              "pdf"
+            ],
+            "output": [
+              "text"
+            ]
+          },
+          "cost": {
+            "input": 2,
+            "output": 10,
+            "cache": {
+              "read": 0.1
+            }
+          },
+          "limit": {
+            "context": 1048576,
+            "output": 65536
+          }
+        },
+        "gemini-4-hydrogen": {
+          "name": "Gemini 4 Hydrogen",
+          "family": "gemini",
+          "package": "@opencode/ai/providers/openai-compatible",
+          "settings": {
+            "baseURL": "{env:BIFROST_BASE_URL}/v1",
+            "apiKey": "{env:BIFROST_VIRTUAL_KEY}"
+          },
+          "headers": {
+            "x-model-provider": "gemini"
+          },
+          "capabilities": {
+            "tools": true,
+            "reasoning": {
+              "supported": true,
+              "effort": [
+                "low",
+                "medium",
+                "high",
+                "xhigh"
+              ]
+            },
+            "input": [
+              "text",
+              "image",
+              "audio",
+              "video",
+              "pdf"
+            ],
+            "output": [
+              "text"
+            ]
+          },
+          "cost": {
+            "input": 1.5,
+            "output": 7.5,
+            "cache": {
+              "read": 0.075
+            }
+          },
+          "limit": {
+            "context": 1048576,
+            "output": 65536
+          }
+        },
         "gemini-4-argon": {
           "name": "Gemini 4 Argon",
           "family": "gemini",
@@ -18,14 +351,31 @@
             "baseURL": "{env:BIFROST_BASE_URL}/v1",
             "apiKey": "{env:BIFROST_VIRTUAL_KEY}"
           },
-          "headers": { "x-model-provider": "gemini" },
+          "headers": {
+            "x-model-provider": "gemini"
+          },
           "capabilities": {
             "tools": true,
-            "input": ["text", "image", "audio", "video", "pdf"],
-            "output": ["text"]
+            "input": [
+              "text",
+              "image",
+              "audio",
+              "video",
+              "pdf"
+            ],
+            "output": [
+              "text"
+            ]
           },
-          "cost": { "input": 2, "output": 10, "cache_read": 0.1 },
-          "limit": { "context": 1048576, "output": 65536 }
+          "cost": {
+            "input": 2,
+            "output": 10,
+            "cache_read": 0.1
+          },
+          "limit": {
+            "context": 1048576,
+            "output": 65536
+          }
         }
       }
     }
@@ -39,61 +389,16 @@
         "apiKey": "{env:BIFROST_VIRTUAL_KEY}"
       },
       "models": {
-        "gpt-5": {
-          "name": "GPT-5",
-          "family": "gpt-5",
-          "tool_call": true,
-          "reasoning": true,
-          "attachment": true,
-          "limit": { "context": 272000, "output": 32768 }
-        },
-        "gpt-5.5": {
-          "name": "GPT-5.5",
-          "family": "gpt-5",
-          "tool_call": true,
-          "reasoning": true,
-          "attachment": true,
-          "limit": { "context": 1050000, "output": 32768 }
-        },
-        "gpt-5.6": {
-          "name": "GPT-5.6",
-          "family": "gpt-5",
-          "tool_call": true,
-          "reasoning": true,
-          "attachment": true,
-          "limit": { "context": 1050000, "output": 32768 }
-        },
-        "gpt-5.6-sol": {
-          "name": "GPT-5.6 Sol",
-          "family": "gpt-5",
-          "tool_call": true,
-          "reasoning": true,
-          "attachment": true,
-          "limit": { "context": 1050000, "output": 32768 }
-        },
-        "gpt-5.6-terra": {
-          "name": "GPT-5.6 Terra",
-          "family": "gpt-5",
-          "tool_call": true,
-          "reasoning": true,
-          "attachment": true,
-          "limit": { "context": 1050000, "output": 32768 }
-        },
-        "gpt-5.6-luna": {
-          "name": "GPT-5.6 Luna",
-          "family": "gpt-5",
-          "tool_call": true,
-          "reasoning": true,
-          "attachment": true,
-          "limit": { "context": 1050000, "output": 32768 }
-        },
-        "gpt-6-luna": {
-          "name": "GPT-6 Luna",
+        "gpt-6-astra": {
+          "name": "GPT-6 Astra",
           "family": "gpt-6",
           "tool_call": true,
           "reasoning": true,
           "attachment": true,
-          "limit": { "context": 1050000, "output": 128000 }
+          "limit": {
+            "context": 1050000,
+            "output": 128000
+          }
         },
         "gpt-6-sol": {
           "name": "GPT-6 Sol",
@@ -101,47 +406,32 @@
           "tool_call": true,
           "reasoning": true,
           "attachment": true,
-          "limit": { "context": 1050000, "output": 128000 }
+          "limit": {
+            "context": 1050000,
+            "output": 128000
+          }
         },
-        "gpt-6-astra": {
-          "name": "GPT-6 Astra",
+        "gpt-5.6-terra": {
+          "name": "GPT-5.6 Terra",
+          "family": "gpt-5",
+          "tool_call": true,
+          "reasoning": true,
+          "attachment": true,
+          "limit": {
+            "context": 1050000,
+            "output": 32768
+          }
+        },
+        "gpt-6-luna": {
+          "name": "GPT-6 Luna",
           "family": "gpt-6",
           "tool_call": true,
           "reasoning": true,
           "attachment": true,
-          "limit": { "context": 1050000, "output": 128000 }
-        },
-        "gpt-5.4": {
-          "name": "GPT-5.4",
-          "family": "gpt-5",
-          "tool_call": true,
-          "reasoning": true,
-          "attachment": true,
-          "limit": { "context": 1050000, "output": 32768 }
-        },
-        "gpt-5.4-mini": {
-          "name": "GPT-5.4 Mini",
-          "family": "gpt-5",
-          "tool_call": true,
-          "reasoning": true,
-          "attachment": true,
-          "limit": { "context": 272000, "output": 32768 }
-        },
-        "gpt-5.4-nano": {
-          "name": "GPT-5.4 Nano",
-          "family": "gpt-5",
-          "tool_call": true,
-          "reasoning": true,
-          "attachment": true,
-          "limit": { "context": 272000, "output": 32768 }
-        },
-        "gpt-5.3-codex": {
-          "name": "GPT-5.3 Codex",
-          "family": "gpt-5",
-          "tool_call": true,
-          "reasoning": true,
-          "attachment": true,
-          "limit": { "context": 272000, "output": 32768 }
+          "limit": {
+            "context": 1050000,
+            "output": 128000
+          }
         }
       }
     },
@@ -151,7 +441,9 @@
       "options": {
         "baseURL": "{env:BIFROST_BASE_URL}/openai/v1",
         "apiKey": "{env:BIFROST_VIRTUAL_KEY}",
-        "headers": { "x-model-provider": "azure" }
+        "headers": {
+          "x-model-provider": "azure"
+        }
       },
       "models": {
         "gpt-5.6-luna-2026-07-09": {
@@ -160,7 +452,10 @@
           "tool_call": true,
           "reasoning": true,
           "attachment": true,
-          "limit": { "context": 1050000, "output": 32768 }
+          "limit": {
+            "context": 1050000,
+            "output": 32768
+          }
         },
         "gpt-5.6-sol-2026-07-09": {
           "name": "GPT-5.6 Sol",
@@ -168,7 +463,10 @@
           "tool_call": true,
           "reasoning": true,
           "attachment": true,
-          "limit": { "context": 1050000, "output": 32768 }
+          "limit": {
+            "context": 1050000,
+            "output": 32768
+          }
         },
         "gpt-5.6-terra-2026-07-09": {
           "name": "GPT-5.6 Terra",
@@ -176,74 +474,10 @@
           "tool_call": true,
           "reasoning": true,
           "attachment": true,
-          "limit": { "context": 1050000, "output": 32768 }
-        }
-      }
-    },
-    "bifrost-anthropic": {
-      "name": "Bifrost Anthropic",
-      "api": "openai",
-      "options": {
-        "baseURL": "{env:BIFROST_BASE_URL}/openai/v1",
-        "apiKey": "{env:BIFROST_VIRTUAL_KEY}",
-        "headers": { "x-model-provider": "anthropic" }
-      },
-      "models": {
-        "claude-opus-5": {
-          "name": "Claude Opus 5",
-          "family": "claude",
-          "tool_call": true,
-          "reasoning": true,
-          "attachment": true,
-          "limit": { "context": 1000000, "output": 32768 }
-        },
-        "claude-opus-5-5": {
-          "name": "Claude Opus 5.5",
-          "family": "claude",
-          "tool_call": true,
-          "reasoning": true,
-          "attachment": true,
-          "limit": { "context": 1000000, "output": 128000 }
-        },
-        "claude-fable-5-1": {
-          "name": "Claude Fable 5.1",
-          "family": "claude",
-          "tool_call": true,
-          "reasoning": true,
-          "attachment": true,
-          "limit": { "context": 1000000, "output": 32768 }
-        },
-        "claude-sonnet-4-6": {
-          "name": "Claude Sonnet 4.6",
-          "family": "claude",
-          "tool_call": true,
-          "reasoning": true,
-          "attachment": true,
-          "limit": { "context": 1000000, "output": 32768 }
-        },
-        "claude-sonnet-5": {
-          "name": "Claude Sonnet 5",
-          "family": "claude",
-          "tool_call": true,
-          "reasoning": true,
-          "attachment": true,
-          "limit": { "context": 1000000, "output": 32768 }
-        },
-        "claude-opus-4-6": {
-          "name": "Claude Opus 4.6",
-          "family": "claude",
-          "tool_call": true,
-          "reasoning": true,
-          "attachment": true,
-          "limit": { "context": 1000000, "output": 32768 }
-        },
-        "claude-opus-4-8": {
-          "name": "Claude Opus 4.8",
-          "family": "claude",
-          "tool_call": true,
-          "reasoning": true,
-          "attachment": true,
-          "limit": { "context": 1000000, "output": 32768 }
+          "limit": {
+            "context": 1050000,
+            "output": 32768
+          }
         }
       }
     },
@@ -253,73 +487,8 @@
       "options": {
         "baseURL": "{env:BIFROST_BASE_URL}/openai/v1",
         "apiKey": "{env:BIFROST_VIRTUAL_KEY}",
-        "headers": { "x-model-provider": "gemini" }
-      },
-      "models": {
-        "gemini-2.5-flash-lite": {
-          "name": "Gemini 2.5 Flash-Lite",
-          "family": "gemini",
-          "tool_call": true,
-          "reasoning": true,
-          "attachment": true,
-          "cost": { "input": 0.1, "output": 0.4 },
-          "limit": { "context": 1114112, "input": 1048576, "output": 65536 }
-        },
-        "gemini-3.8-flash": {
-          "name": "Gemini 3.8 Flash",
-          "family": "gemini",
-          "tool_call": true,
-          "reasoning": true,
-          "attachment": true,
-          "limit": { "context": 1114112, "output": 32768 }
-        },
-        "gemini-3.5-flash": {
-          "name": "Gemini 3.5 Flash",
-          "family": "gemini",
-          "tool_call": true,
-          "reasoning": true,
-          "attachment": true,
-          "limit": { "context": 1114112, "output": 32768 }
-        },
-        "gemini-3.5-flash-lite": {
-          "name": "Gemini 3.5 Flash Lite",
-          "family": "gemini",
-          "tool_call": true,
-          "reasoning": true,
-          "attachment": true,
-          "limit": { "context": 1114112, "output": 32768 }
-        },
-        "gemini-3.1-flash-lite": {
-          "name": "Gemini 3.1 Flash Lite",
-          "family": "gemini",
-          "tool_call": true,
-          "reasoning": true,
-          "attachment": true,
-          "limit": { "context": 1114112, "output": 32768 }
-        },
-        "gemini-flash-latest": {
-          "name": "Gemini Flash Latest",
-          "family": "gemini",
-          "tool_call": true,
-          "reasoning": true,
-          "attachment": true,
-          "limit": { "context": 1114112, "output": 32768 }
-        },
-        "gemini-flash-lite-latest": {
-          "name": "Gemini Flash Lite Latest",
-          "family": "gemini",
-          "tool_call": true,
-          "reasoning": true,
-          "attachment": true,
-          "limit": { "context": 1114112, "output": 32768 }
-        },
-        "gemini-pro-latest": {
-          "name": "Gemini Pro Latest",
-          "family": "gemini",
-          "tool_call": true,
-          "reasoning": true,
-          "attachment": true,
-          "limit": { "context": 1114112, "output": 32768 }
+        "headers": {
+          "x-model-provider": "gemini"
         }
       }
     },
@@ -329,7 +498,9 @@
       "options": {
         "baseURL": "{env:BIFROST_BASE_URL}/openai/v1",
         "apiKey": "{env:BIFROST_VIRTUAL_KEY}",
-        "headers": { "x-model-provider": "deepseek" }
+        "headers": {
+          "x-model-provider": "deepseek"
+        }
       },
       "models": {
         "deepseek-v4-pro": {
@@ -338,7 +509,10 @@
           "tool_call": true,
           "reasoning": false,
           "attachment": false,
-          "limit": { "context": 1048576, "output": 32768 }
+          "limit": {
+            "context": 1048576,
+            "output": 32768
+          }
         },
         "deepseek-v4-flash": {
           "name": "DeepSeek V4 Flash",
@@ -346,27 +520,10 @@
           "tool_call": true,
           "reasoning": false,
           "attachment": false,
-          "limit": { "context": 1048576, "output": 32768 }
-        }
-      }
-    },
-    "bifrost-xai": {
-      "name": "Bifrost xAI",
-      "api": "openai",
-      "options": {
-        "baseURL": "{env:BIFROST_BASE_URL}/openai/v1",
-        "apiKey": "{env:BIFROST_VIRTUAL_KEY}",
-        "headers": { "x-model-provider": "xai" }
-      },
-      "models": {
-        "grok-4.6": {
-          "id": "xai/grok-4.6",
-          "name": "Grok 4.6",
-          "family": "grok",
-          "tool_call": true,
-          "reasoning": true,
-          "attachment": true,
-          "limit": { "context": 500000, "output": 32768 }
+          "limit": {
+            "context": 1048576,
+            "output": 32768
+          }
         }
       }
     },
@@ -376,7 +533,9 @@
       "options": {
         "baseURL": "{env:BIFROST_BASE_URL}/openai/v1",
         "apiKey": "{env:BIFROST_VIRTUAL_KEY}",
-        "headers": { "x-model-provider": "openrouter" }
+        "headers": {
+          "x-model-provider": "openrouter"
+        }
       },
       "models": {
         "deepseek/deepseek-v4-pro": {
@@ -385,7 +544,10 @@
           "tool_call": true,
           "reasoning": false,
           "attachment": false,
-          "limit": { "context": 1048576, "output": 32768 }
+          "limit": {
+            "context": 1048576,
+            "output": 32768
+          }
         },
         "deepseek/deepseek-v4-flash": {
           "name": "DeepSeek V4 Flash",
@@ -393,7 +555,10 @@
           "tool_call": true,
           "reasoning": false,
           "attachment": false,
-          "limit": { "context": 1048576, "output": 32768 }
+          "limit": {
+            "context": 1048576,
+            "output": 32768
+          }
         },
         "deepseek/deepseek-v4-flash-0731": {
           "name": "DeepSeek V4 Flash 0731",
@@ -401,7 +566,10 @@
           "tool_call": true,
           "reasoning": false,
           "attachment": false,
-          "limit": { "context": 1048576, "output": 32768 }
+          "limit": {
+            "context": 1048576,
+            "output": 32768
+          }
         },
         "moonshotai/kimi-k2.7-code": {
           "name": "Kimi K2.7 Code",
@@ -409,7 +577,10 @@
           "tool_call": true,
           "reasoning": false,
           "attachment": false,
-          "limit": { "context": 262144, "output": 32768 }
+          "limit": {
+            "context": 262144,
+            "output": 32768
+          }
         },
         "moonshotai/kimi-k3": {
           "name": "Kimi K3",
@@ -417,7 +588,10 @@
           "tool_call": true,
           "reasoning": false,
           "attachment": false,
-          "limit": { "context": 1048576, "output": 32768 }
+          "limit": {
+            "context": 1048576,
+            "output": 32768
+          }
         },
         "xiaomi/mimo-v2.5": {
           "name": "MiMo V2.5",
@@ -425,7 +599,10 @@
           "tool_call": true,
           "reasoning": false,
           "attachment": false,
-          "limit": { "context": 1048576, "output": 32768 }
+          "limit": {
+            "context": 1048576,
+            "output": 32768
+          }
         },
         "xiaomi/mimo-v2.5-pro": {
           "name": "MiMo V2.5 Pro",
@@ -433,7 +610,10 @@
           "tool_call": true,
           "reasoning": false,
           "attachment": false,
-          "limit": { "context": 1048576, "output": 32768 }
+          "limit": {
+            "context": 1048576,
+            "output": 32768
+          }
         },
         "~moonshotai/kimi-latest": {
           "name": "Kimi Latest",
@@ -441,7 +621,10 @@
           "tool_call": true,
           "reasoning": false,
           "attachment": false,
-          "limit": { "context": 262144, "output": 32768 }
+          "limit": {
+            "context": 262144,
+            "output": 32768
+          }
         }
       }
     }
@@ -475,6 +658,14 @@
   },
   "mcp": {
     "servers": {
+      "context7": {
+        "type": "remote",
+        "url": "https://mcp.context7.com/mcp",
+        "oauth": false,
+        "headers": {
+          "CONTEXT7_API_KEY": "{env:CONTEXT7_API_KEY}"
+        }
+      },
       "donsetch": {
         "type": "local",
         "command": [

@@ -61,3 +61,9 @@ These are personal defaults for all projects. Follow repository-specific instruc
 ## Platform
 
 - Target macOS and Linux unless a project says otherwise; avoid unnecessary platform-specific assumptions.
+{{ if and .is_linux (eq .chezmoi.hostname "smed") }}
+## Smed Development Environment
+
+- Use `smed` for development. Do not deploy to or change production services unless explicitly asked.
+- Use `sudo -n docker compose` on `smed`; the account cannot access the Docker socket directly.
+{{ end -}}

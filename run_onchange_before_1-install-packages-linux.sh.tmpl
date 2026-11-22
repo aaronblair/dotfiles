@@ -288,7 +288,14 @@ if command -v apk > /dev/null 2>&1; then
     install_apk_packages "$(repo_packages_for_profile "$APK_SERVER_PACKAGES" "$APK_DEV_PACKAGES" "$APK_AI_PACKAGES")"
 elif command -v apt-get > /dev/null 2>&1; then
     echo "[chezmoi] Detected Debian/Ubuntu (apt)"
-    install_apt_packages "$(repo_packages_for_profile "$APT_SERVER_PACKAGES" "$APT_DEV_PACKAGES" "$APT_AI_PACKAGES")"
+    install_apt_packages "$(repo_packages_for_profile "$APT_SERVER_PACKAGES" "$APT_DEV_PACKAGES" "$APT_AI_PACKAGES"){{ range index .packages.linux.repo.apt.hosts .chezmoi.hostname }} {{ . }}{{ end }}"
+{{- if eq .chezmoi.hostname "smed" }}
+    # Ubuntu ships fdfind; T3 needs fd on its non-interactive PATH.
+    if [ -x /usr/bin/fdfind ] && [ ! -x /usr/bin/fd ] &&
+        [ ! -e /usr/local/bin/fd ] && [ ! -L /usr/local/bin/fd ]; then
+        $SUDO ln -s /usr/bin/fdfind /usr/local/bin/fd
+    fi
+{{- end }}
 else
     echo "[chezmoi] No supported Linux package manager found"
     exit 1

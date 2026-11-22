@@ -36,6 +36,14 @@ packages:
           - lazygit
           - tree
           - wget
+        hosts:
+          smed:
+            - poppler-utils
+            - shellcheck
+            - shfmt
+            - sqlite3
+            - zip
+            - zstd
       apk:
         server:
           - bash

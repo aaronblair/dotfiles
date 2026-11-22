@@ -128,6 +128,19 @@ Linux packages are defined declaratively in `.chezmoidata/packages.yaml` and ins
 - `apt` and `apk` installs are best-effort for repo packages
 - `uv`, Node.js, `pnpm`, `kagi-ken-cli`, `opencode`, and `zellij` are installed by profile-aware installer logic for `dev` and `ai`
 
+### Smed CLI baseline
+
+On `smed`, the Linux installer adds `shellcheck`, `shfmt`, `sqlite3`, `poppler-utils` (`pdftotext` and `pdfinfo`), `zip`, and `zstd` to the normal `dev` profile packages. The host-specific list lives under `packages.linux.repo.apt.hosts.smed`; other hosts are unaffected.
+
+The installer also links Ubuntu's `fdfind` to `/usr/local/bin/fd` when neither a system `fd` nor a local entry is present. This makes `fd` available to T3 without depending on interactive shell aliases.
+
+Preview just the Linux package script on `smed` without running it:
+
+```sh
+chezmoi apply --dry-run --verbose --source-path \
+    "$(chezmoi source-path)/run_onchange_before_1-install-packages-linux.sh.tmpl"
+```
+
 ## Profile Switching
 
 Profile changes can remove previously-managed files through `.chezmoiremove.tmpl`.

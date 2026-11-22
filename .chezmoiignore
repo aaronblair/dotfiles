@@ -21,6 +21,12 @@ run_*darwin*
 run_*linux*
 {{- end }}
 
+{{- if or (not .is_linux) (ne .chezmoi.hostname "smed") }}
+# T3's user service runs on smed only.
+.config/systemd/user/t3code.service.d
+.config/systemd/user/t3code.service.d/**
+{{- end }}
+
 {{- if not .has_display }}
 # GUI apps not needed on non-display profiles.
 .wezterm.lua
